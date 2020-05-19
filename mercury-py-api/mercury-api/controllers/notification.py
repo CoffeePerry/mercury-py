@@ -1,6 +1,7 @@
 # coding=utf-8
 
-import mercury_api.services.notification as services_notification
+from ..services import notification as services_notification
+from ..services.database import create_db  # Test
 
 from flask import abort, request
 from flask_restful import Resource, marshal
@@ -14,6 +15,7 @@ class NotificationListAPI(Resource):
         super(NotificationListAPI, self).__init__()
 
     def get(self):
+        create_db()  # Test
         return {'notifications': [marshal(notification, services_notification.notification_fields) for notification
                                   in services_notification.get_notifications()]}
 

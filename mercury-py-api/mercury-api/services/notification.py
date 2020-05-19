@@ -1,7 +1,7 @@
 # coding=utf-8
 
-from mercury_api.models.notification import Notification
-from mercury_api.services.database import db
+from ..models.notification import Notification
+from ..services.database import db
 
 from datetime import datetime
 

@@ -1,6 +1,6 @@
 # coding=utf-8
 
-from mercury_api.services.database import db
+from ..services.database import db
 
 from datetime import datetime
 
