@@ -1,8 +1,8 @@
 # coding=utf-8
 
-# from ..models.notification import Notification
-from ..services.database import db
-from ..services.hashing import hashing
+# from mercury.models.notification import Notification
+from mercury.services.database import db
+from mercury.services.hashing import hashing
 
 from datetime import datetime
 from typing import Final

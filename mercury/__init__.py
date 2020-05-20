@@ -1,7 +1,7 @@
 # coding=utf-8
 
-from .services.database import init_app as init_database
-from .services.database import init_app as init_hashing
+from mercury.services.database import init_app as init_database
+from mercury.services.database import init_app as init_hashing
 
 import os
 

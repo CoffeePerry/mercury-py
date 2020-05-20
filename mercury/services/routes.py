@@ -1,6 +1,6 @@
 # coding=utf-8
 
-from ..controllers.notification import NotificationListAPI, NotificationAPI
+from mercury.controllers.notification import NotificationListAPI, NotificationAPI
 
 
 def init_api(api):

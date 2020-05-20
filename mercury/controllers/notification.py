@@ -1,7 +1,7 @@
 # coding=utf-8
 
-from ..services import notification as services_notification
-from ..services.database import create_db  # Test
+from mercury.services import notification as services_notification
+from mercury.services.database import create_db  # Test
 
 from flask import abort, request
 from flask_restful import Resource, marshal
