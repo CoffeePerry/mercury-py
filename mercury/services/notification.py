@@ -1,7 +1,7 @@
 # coding=utf-8
 
-from mercury.models.notification import Notification
-from mercury.services.database import db
+# TODO: Notification MongoDB
+from mercury.services.database_sql import db
 
 from datetime import datetime
 

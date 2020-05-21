@@ -1,21 +1,19 @@
 # coding=utf-8
 
 from mercury.services import notification as services_notification
-from mercury.services.database import create_db  # Test
 
 from flask import abort, request
 from flask_restful import Resource, marshal
 
 
 class NotificationListAPI(Resource):
-    # decorators = [AuthHmac.get_instance().auth()]
+    # decorators = []
 
     def __init__(self):
         self.reqparse = services_notification.get_request_parser()
         super(NotificationListAPI, self).__init__()
 
     def get(self):
-        create_db()  # Test
         return {'notifications': [marshal(notification, services_notification.notification_fields) for notification
                                   in services_notification.get_notifications()]}
 
@@ -24,11 +22,11 @@ class NotificationListAPI(Resource):
             abort(400)
         notification = {key: value for key, value in self.reqparse.parse_args().items() if value is not None}
         return {'notification': marshal(services_notification.insert_notification(notification),
-                                        services_notification.notification_fields)}, 201  # 201 = Code for "Created"
+                                        services_notification.notification_fields)}, 201
 
 
 class NotificationAPI(Resource):
-    # decorators = [AuthHmac.get_instance().auth()]
+    # decorators = []
 
     def __init__(self):
         self.reqparse = services_notification.get_request_parser()

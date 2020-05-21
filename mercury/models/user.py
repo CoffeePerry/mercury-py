@@ -1,25 +1,35 @@
 # coding=utf-8
 
-# from mercury.models.notification import Notification
-from mercury.services.database import db
-from mercury.services.hashing import hashing
+from mercury.services.database_sql import db
+from mercury.services.hashing import PASSWORD_HASH_MAX_LENGTH, hashing, bcrypt_handle_long_password
 
 from datetime import datetime
-from typing import Final
 
 
 class User(db.Model):
-    _PASSWORD_HASH_MAX_LENGTH: Final = 72
-
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(254), index=True)
-    password_hash = db.Column(db.Binary(_PASSWORD_HASH_MAX_LENGTH))
+    username = db.Column(db.String(254), index=True, unique=True, nullable=False)
+    password_hash = db.Column(db.Binary(PASSWORD_HASH_MAX_LENGTH), nullable=False)
+    creation_datetime = db.Column(db.DateTime, nullable=False, default=datetime.utcnow())
+    active = db.Column(db.DateTime, nullable=False, default=False)
 
+    def __repr__(self):
+        return '<User %r>' % self.username
+
+    @bcrypt_handle_long_password
     def hash_password(self, password):
-        if password > self._PASSWORD_HASH_MAX_LENGTH:
-            raise Exception('Field "password" length can\'t be greater than ' + str(self._PASSWORD_HASH_MAX_LENGTH))
-        # self.password_hash = hashing #pwd_context.encrypt(password)
+        """
+        Hash the passed plain password and save it to the user.
+
+        :param password: The plain password.
+        """
+        self.password_hash = hashing.generate_password_hash(password)
 
     def verify_password(self, password):
-        pass
-        # return pwd_context.verify(password, self.password_hash)
+        """
+        Verify the passed plain password against the user's hashed password.
+
+        :param password: The plain password to compare.
+        :return: The outcome of the comparison.
+        """
+        return hashing.check_password_hash(self.password_hash, password)

@@ -1,7 +1,8 @@
 # coding=utf-8
 
-from mercury.services.database import init_app as init_database
-from mercury.services.database import init_app as init_hashing
+from mercury.services.database_sql import init_app as init_database_sql
+from mercury.services.database_nosql_mongo import init_app as init_database_nosql_mongo
+from mercury.services.hashing import init_app as init_hashing
 
 import os
 
@@ -32,7 +33,8 @@ def create_app(test_config=None):
     except OSError:
         pass
 
-    init_database(app)
+    init_database_sql(app)
+    init_database_nosql_mongo(app)
     init_hashing(app)
 
     # Load routes after load other services
