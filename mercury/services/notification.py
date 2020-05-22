@@ -1,9 +1,9 @@
 # coding=utf-8
 
-# TODO: Notification MongoDB
-from mercury.services.database_sql import db
+from mercury.services.database_nosql_mongo import db as mongo
 
 from datetime import datetime
+from bson import ObjectId
 
 from flask_restful import fields, reqparse
 
@@ -25,31 +25,30 @@ def get_request_parser(request_parser=None):
     return result
 
 
-def get_notification(id):
-    return Notification.query.get_or_404(id)
+def select_notification(id):
+    return mongo.db.notification.find_one_or_404({'_id': ObjectId(id)})
 
 
-def get_notifications():
-    return Notification.query.all()
+def select_notifications():
+    return mongo.db.notification.find()
 
 
-def insert_notification(new_notification):
-    notification = Notification()
-    [notification.__setattr__(key, value) for key, value in new_notification.items() if value is not None]
-    db.session.add(notification)
-    db.session.commit()
-    return notification
+def insert_notification(notification):
+    return {
+        '_id': mongo.db.notification.insert_one(notification).inserted_id,
+        'datetime_send': notification['datetime_send']
+    }
 
 
-def save_notification(notification):
-    if notification is None:
-        return None
-    db.session.commit()
-    return notification
+def update_notification(id, notification):
+    if mongo.db.notification.update_one({'_id': ObjectId(id)}, {'$set': notification}).acknowledged:
+        return {
+            '_id': id,
+            'datetime_send': notification['datetime_send']
+        }
+    else:
+        return {'result': False}
 
 
 def delete_notification(id):
-    notification = Notification.query.get_or_404(id)
-    db.session.delete(notification)
-    db.session.commit()
-    return True
+    return mongo.db.notification.remove({'_id': ObjectId(id)})['ok'] == 1.0

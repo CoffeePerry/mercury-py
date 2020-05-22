@@ -22,29 +22,28 @@ def get_request_parser(request_parser=None):
     else:
         result = request_parser
     result.add_argument('username', type=str, required=True, help='No user username provided', location='json')
-    result.add_argument('creation_datetime', type=lambda x: datetime.strptime(x, '%Y-%m-%d %H:%M:%S'), required=True,
-                        help='No user creation_datetime provided', location='json')
-    result.add_argument('active', type=bool, required=True, help='No user active provided', location='json')
+    result.add_argument('password', type=str, required=True, help='No user password provided', location='json')
     return result
 
 
-def get_user(id):
+def select_user(id):
     return User.query.get_or_404(id)
 
 
-def get_users():
+def select_users():
     return User.query.all()
 
 
 def insert_user(new_user):
     user = User()
     [user.__setattr__(key, value) for key, value in new_user.items() if value is not None]
+    user.hash_password(user.password)
     db.session.add(user)
     db.session.commit()
     return user
 
 
-def save_user(user):
+def update_user(user):
     if user is None:
         return None
     db.session.commit()

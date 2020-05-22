@@ -1,5 +1,14 @@
 # coding=utf-8
 
+"""
+Work in progress.
+
+TODO:
+- Auth;
+- Background process;
+- CLI: Generate and delete schema (sql database).
+"""
+
 from mercury.services.database_sql import init_app as init_database_sql
 from mercury.services.database_nosql_mongo import init_app as init_database_nosql_mongo
 from mercury.services.hashing import init_app as init_hashing

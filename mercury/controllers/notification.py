@@ -15,13 +15,12 @@ class NotificationListAPI(Resource):
 
     def get(self):
         return {'notifications': [marshal(notification, services_notification.notification_fields) for notification
-                                  in services_notification.get_notifications()]}
+                                  in services_notification.select_notifications()]}
 
     def post(self):
         if not request.json:
             abort(400)
-        notification = {key: value for key, value in self.reqparse.parse_args().items() if value is not None}
-        return {'notification': marshal(services_notification.insert_notification(notification),
+        return {'notification': marshal(services_notification.insert_notification(request.json),
                                         services_notification.notification_fields)}, 201
 
 
@@ -32,17 +31,15 @@ class NotificationAPI(Resource):
         self.reqparse = services_notification.get_request_parser()
         super(NotificationAPI, self).__init__()
 
-    def get(self, id):
-        return {'notification': marshal(services_notification.get_notification(id),
+    def get(self, _id):
+        return {'notification': marshal(services_notification.select_notification(_id),
                                         services_notification.notification_fields)}
 
-    def put(self, id):
+    def put(self, _id):
         if not request.json:
             abort(400)
-        notification = services_notification.get_notification(id)
-        [notification.__setattr__(key, value) for key, value in self.reqparse.parse_args().items() if value is not None]
-        return {'notification': marshal(services_notification.save_notification(notification),
+        return {'notification': marshal(services_notification.update_notification(_id, request.json),
                                         services_notification.notification_fields)}
 
-    def delete(self, id):
-        return {'result': services_notification.delete_notification(id)}
+    def delete(self, _id):
+        return {'result': services_notification.delete_notification(_id)}

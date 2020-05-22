@@ -2,11 +2,9 @@
 
 from hashlib import sha256
 from functools import wraps
-from typing import Final
 
 from flask_bcrypt import Bcrypt
 
-PASSWORD_HASH_MAX_LENGTH: Final = 32  # sha256 hash max bytes length
 
 hashing = Bcrypt()
 
@@ -25,11 +23,13 @@ def bcrypt_handle_long_password(function):
     Decorator to handle long password for bcrypt hashing.
     """
     @wraps(function)
-    def wrapper(password=None, *args):
-        if password is not None:
-            password = sha256(password).hexdigest()
-            password = unicode_to_bytes(password)
-        return function(password, *args)
+    def wrapper(*args, **kwargs):
+        user, password = args
+        if password is None:
+            raise Exception('Parameter password can\'t be None')
+        password = sha256(password.encode('utf-8')).hexdigest()
+        password = unicode_to_bytes(password)
+        return function(user, password, **kwargs)
     return wrapper
 
 
