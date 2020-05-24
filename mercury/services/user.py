@@ -31,6 +31,11 @@ def select_user(id):
 
 
 def select_users():
+    # --- TEST
+    from mercury.services.workers import test
+    result = test.delay(23, 42)
+    result.wait()
+    # ---
     return User.query.all()
 
 

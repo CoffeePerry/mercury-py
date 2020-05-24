@@ -6,12 +6,12 @@ Work in progress.
 TODO:
 - Auth;
 - Background process;
-- CLI: Generate and delete schema (sql database).
 """
 
 from mercury.services.database_sql import init_app as init_database_sql
 from mercury.services.database_nosql_mongo import init_app as init_database_nosql_mongo
 from mercury.services.hashing import init_app as init_hashing
+from mercury.services.workers import init_app as init_celery
 
 import os
 
@@ -51,9 +51,15 @@ def create_app(test_config=None):
     init_api(api)
     api.init_app(app)
 
+    init_celery(app)
+
     # Base page for check if service is ready
     @app.route('/mercury/api/v1.0/')
     def index():
         return 'Mercury v1.0 online!'
+
+    @app.cli.command('info')
+    def info():
+        print('Mercury v1.0 ready!')
 
     return app
