@@ -3,8 +3,6 @@
 from mercury.models.user import User
 from mercury.services.database_sql import db
 
-from datetime import datetime
-
 from flask_restful import fields, reqparse
 
 
@@ -31,11 +29,6 @@ def select_user(id):
 
 
 def select_users():
-    # --- TEST
-    from mercury.services.workers import test
-    result = test.delay(23, 42)
-    result.wait()
-    # ---
     return User.query.all()
 
 
