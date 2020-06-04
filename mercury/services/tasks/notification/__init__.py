@@ -1,10 +1,13 @@
 # coding=utf-8
 
-from .email import Email
+# TODO: Re-generate requirements.txt adding Flask-Mail
+
 from .. import celery
 from mercury.services.notification import find_notifications_to_send
 
-email = Email()
+from flask_mail import Mail, Message
+
+mail = Mail()
 
 
 def init_app(app):
@@ -12,20 +15,24 @@ def init_app(app):
 
     :param app: The Flask application object.
     """
-    email.init_app(app)
+    mail.init_app(app)
 
 
 def route_notification(notification):
     return {
-        'email': email.send(notification)
+        'email': route_notification_mail(notification)
     }.get(notification['category'], 'email')
+
+
+def route_notification_mail(notification):
+    msg = Message(notification['text'], recipients=notification['recipients'])
+    mail.send(msg)
 
 
 @celery.task()
 def route_notifications():
-    return 'OK'
     notifications = find_notifications_to_send()
     if notifications is None:
         return 'Nothing to send.'
     for notification in notifications:
-        self.route_notification(notification)
+        route_notification(notification)
