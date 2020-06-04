@@ -1,16 +1,16 @@
 # coding=utf-8
 
-"""
-Work in progress.
+'''Work in progress.
 
 TODO:
-- Auth;
-"""
+- Auth, with registration by CLI;
+'''
 
 from .services.database_sql import init_app as init_database_sql
 from .services.database_nosql_mongo import init_app as init_database_nosql_mongo
 from .services.hashing import init_app as init_hashing
 from .services.tasks import init_app as init_tasks
+from .services.tasks.notification import init_app as init_notification
 
 import os
 
@@ -48,6 +48,7 @@ def create_app():
     api.init_app(app)
 
     init_tasks(app)
+    init_notification(app)
 
     # Base page for check if service is ready
     @app.route('/mercury/api/v1.0/')

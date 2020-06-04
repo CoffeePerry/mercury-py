@@ -21,16 +21,14 @@ class User(db.Model):
 
     @bcrypt_handle_long_password
     def hash_password(self, password):
-        """
-        Hash the passed plain password and save it to the user.
+        """Hash the passed plain password and save it to the user.
 
         :param password: The plain password.
         """
         self.password = hashing.generate_password_hash(password)
 
     def verify_password(self, password):
-        """
-        Verify the passed plain password against the user's hashed password.
+        """Verify the passed plain password against the user's hashed password.
 
         :param password: The plain password to compare.
         :return: The outcome of the comparison.

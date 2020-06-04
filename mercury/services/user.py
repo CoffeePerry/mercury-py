@@ -24,6 +24,9 @@ def get_request_parser(request_parser=None):
     return result
 
 
+'''API Functions'''
+
+
 def select_user(id):
     return User.query.get_or_404(id)
 

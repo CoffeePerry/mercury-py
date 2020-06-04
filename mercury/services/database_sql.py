@@ -8,8 +8,7 @@ db_cli = AppGroup('database')
 
 
 def init_app(app):
-    """
-    Initalizes the application database (SQL).
+    """Initalizes the application database (SQL).
 
     :param app: The Flask application object.
     """
@@ -19,27 +18,15 @@ def init_app(app):
 
 @db_cli.command('create')
 def create_database():
-    create_db()
+    """Create the database schema."""
+    db.create_all()
     print('Database SQL created')
 
 
 @db_cli.command('drop')
 def create_database():
+    """Drop the database."""
     response = input('Are you really sure to delete the SQL database and all the data it contains? [Y/n]:')
     if response == 'Y':
-        drop_db()
+        db.drop_all()
         print('Database SQL dropped')
-
-
-def create_db():
-    """
-    Create the database schema.
-    """
-    db.create_all()
-
-
-def drop_db():
-    """
-    Drop the database.
-    """
-    db.drop_all()

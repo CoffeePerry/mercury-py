@@ -6,8 +6,7 @@ db = PyMongo()
 
 
 def init_app(app):
-    """
-    Initalizes the application database MongoDB (NoSQL).
+    """Initalizes the application database MongoDB (NoSQL).
 
     :param app: The Flask application object.
     """

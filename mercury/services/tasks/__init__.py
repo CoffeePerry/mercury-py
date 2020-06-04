@@ -19,7 +19,7 @@ def init_app(app):
     celery.Task = ContextTask
 
 
-class CeleryBeatConfig:
+class CeleryBeatConfig(object):
     def __init__(self):
         self.CELERY_TASK_SERIALIZER = 'json'
         self.CELERY_RESULT_SERIALIZER = 'json'
@@ -29,8 +29,8 @@ class CeleryBeatConfig:
         self.CELERY_TASK_RESULT_EXPIRES = 30
 
         self.CELERYBEAT_SCHEDULE = {
-            'check_notifications': {
-                'task': 'mercury.services.tasks.notification.check_notifications',
+            'route_notifications': {
+                'task': 'mercury.services.tasks.notification.route_notifications',
                 'schedule': crontab(minute='*'),  # Every minute
             }
         }

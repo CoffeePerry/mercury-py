@@ -10,8 +10,7 @@ hashing = Bcrypt()
 
 
 def init_app(app):
-    """
-    Initalizes the application hashing.
+    """Initalizes the application hashing.
 
     :param app: The Flask application object.
     """
@@ -19,9 +18,7 @@ def init_app(app):
 
 
 def bcrypt_handle_long_password(function):
-    """
-    Decorator to handle long password for bcrypt hashing.
-    """
+    """Decorator to handle long password for bcrypt hashing."""
     @wraps(function)
     def wrapper(*args, **kwargs):
         user, password = args
