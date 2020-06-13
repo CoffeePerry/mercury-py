@@ -4,12 +4,14 @@ from mercury.controllers.notification import NotificationListAPI, NotificationAP
 from mercury.controllers.user import UserListAPI, UserAPI
 
 
-def init_api(api):
+def init_api(api, version='0.0'):
     """Initalizes the application Api routes.
 
     :param api: The Flask application's Api object.
+    :param version: The Flask application's version (default is 0.0).
     """
-    api.add_resource(NotificationListAPI, '/mercury/api/v1.0/notifications/', endpoint='notifications')
-    api.add_resource(NotificationAPI, '/mercury/api/v1.0/notifications/<string:_id>', endpoint='notification')
-    api.add_resource(UserListAPI, '/mercury/api/v1.0/users/', endpoint='users')
-    api.add_resource(UserAPI, '/mercury/api/v1.0/users/<int:id>', endpoint='user')
+    api.add_resource(NotificationListAPI, f'/mercury/api/v{version}/notifications/', endpoint='notifications')
+    api.add_resource(NotificationAPI, f'/mercury/api/v{version}/notifications/<string:_id>',
+                     endpoint='notification')
+    api.add_resource(UserListAPI, f'/mercury/api/v{version}/users/', endpoint='users')
+    api.add_resource(UserAPI, f'/mercury/api/v{version}/users/<int:id>', endpoint='user')

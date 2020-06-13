@@ -11,10 +11,17 @@ import os
 from flask import Flask, send_from_directory
 from flask_restful import Api
 
+__version_info__ = ('1', '0')
+__version__ = '.'.join(__version_info__)
+
 api = Api()
 
 
 def create_app():
+    """Application factory.
+
+    :return: An application instance.
+    """
     # Create and configure the app
     app = Flask(__name__, instance_relative_config=True)
 
@@ -38,24 +45,36 @@ def create_app():
 
     # Load routes after load other services
     from .services.routes import init_api
-    init_api(api)
+    init_api(api, __version__)
     api.init_app(app)
 
     init_tasks(app)
     init_notification(app)
 
     # Base page for check if service is ready
-    @app.route('/mercury/api/v1.0/')
+    @app.route(f'/mercury/api/v{__version__}/')
     def index():
-        return 'Mercury v1.0 online!'
+        """Return Mercury index page.
+
+        :return: Mercury index page.
+        """
+        return f'Mercury v{__version__} online!'
 
     @app.route('/favicon.ico')
     def favicon():
+        """Return Mercury favicon.ico.
+
+        :return: Mercury favicon.ico.
+        """
         return send_from_directory(os.path.join(app.root_path, 'static'),
                                    'favicon.ico', mimetype='image/vnd.microsoft.icon')
 
     @app.cli.command('info')
     def info():
-        print('Mercury v1.0 ready!')
+        """Print Mercury info.
+
+        :return: Mercury info.
+        """
+        print(f'Mercury v{__version__} ready!')
 
     return app

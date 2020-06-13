@@ -1,7 +1,5 @@
 # coding=utf-8
 
-# TODO: Re-generate requirements.txt adding Flask-Mail
-
 from .. import celery
 from mercury.services.notification import find_notifications_to_dispatch, update_notification
 
@@ -24,7 +22,8 @@ def init_app(app):
 
 @celery.task()
 def route_notifications():
-    """Celery task routine to find and route notifications to dispatch to correct notification channel.
+    """Celery task routine to find and route notifications to dispatch to correct notification channel
+    (executed by celery worker).
 
     :return: Operations logs.
     """

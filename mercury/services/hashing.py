@@ -21,6 +21,7 @@ def bcrypt_handle_long_password(function):
     """Decorator to handle long password for bcrypt hashing."""
     @wraps(function)
     def wrapper(*args, **kwargs):
+        """Wrapper to handle long password for bcrypt hashing."""
         user, password = args
         if password is None:
             raise Exception('Parameter password can\'t be None')

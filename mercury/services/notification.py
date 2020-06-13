@@ -7,7 +7,7 @@ from bson import ObjectId
 
 from flask_restful import fields, reqparse
 
-
+"""Fields to marshal notification to JSON."""
 notification_fields = {
     'category': fields.String,
     'datetime_schedule': fields.String,
@@ -21,6 +21,11 @@ notification_fields = {
 
 
 def get_request_parser(request_parser=None):
+    """Get request parser for notification.
+
+    :param request_parser: If exists, add request parser argument to request_parser param.
+    :return: Notification request parser.
+    """
     if request_parser is None:
         result = reqparse.RequestParser()
     else:
@@ -32,14 +37,28 @@ def get_request_parser(request_parser=None):
 
 
 def select_notification(id):
+    """Get notification by id param.
+
+    :param id: Notification's id to find.
+    :return: Notification found or error 404.
+    """
     return mongo.db.notification.find_one_or_404({'_id': ObjectId(id)})
 
 
 def select_notifications():
+    """Get all notifications.
+
+    :return: All notifications.
+    """
     return mongo.db.notification.find()
 
 
 def insert_notification(notification):
+    """Post the notification passed by notification param (MongoDB has limit of 16 megabytes per document).
+
+    :param notification: Notification to persist.
+    :return: Persisted notification's base informations or error.
+    """
     return {
         '_id': mongo.db.notification.insert_one(notification).inserted_id,
         'category': notification['category'],
@@ -48,6 +67,12 @@ def insert_notification(notification):
 
 
 def update_notification(id, notification):
+    """Put the notification passed by notification param (MongoDB has limit of 16 megabytes per document).
+
+    :param id: Notification's id to find.
+    :param notification: Notification to persist.
+    :return: Persisted notification's base informations or error.
+    """
     notification_found = mongo.db.notification.find_one_or_404({'_id': ObjectId(id)})
     if mongo.db.notification.update_one({'_id': notification_found['_id']}, {'$set': notification}).acknowledged:
         return {
@@ -60,6 +85,11 @@ def update_notification(id, notification):
 
 
 def delete_notification(id):
+    """Delete the notification that have the passed notification id.
+
+    :param id: Notification's id to find.
+    :return: True if elimination was successful or False if elimination was not possible.
+    """
     return mongo.db.notification.remove({'_id': ObjectId(id)})['ok'] == 1.0
 
 

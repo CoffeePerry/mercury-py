@@ -17,6 +17,10 @@ class User(db.Model):
     active = db.Column(db.Boolean, nullable=False, default=True)
 
     def __repr__(self):
+        """Returns user representation.
+
+        :return: Username that represent user.
+        """
         return '<User %r>' % self.username
 
     @bcrypt_handle_long_password
