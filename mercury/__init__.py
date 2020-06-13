@@ -14,7 +14,7 @@ from .services.tasks.notification import init_app as init_notification
 
 import os
 
-from flask import Flask
+from flask import Flask, send_from_directory
 from flask_restful import Api
 
 api = Api()
@@ -54,6 +54,11 @@ def create_app():
     @app.route('/mercury/api/v1.0/')
     def index():
         return 'Mercury v1.0 online!'
+
+    @app.route('/favicon.ico')
+    def favicon():
+        return send_from_directory(os.path.join(app.root_path, 'static'),
+                                   'favicon.ico', mimetype='image/vnd.microsoft.icon')
 
     @app.cli.command('info')
     def info():
