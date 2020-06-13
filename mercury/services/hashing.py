@@ -31,8 +31,7 @@ def bcrypt_handle_long_password(function):
 
 
 def unicode_to_bytes(unicode_string):
-    """
-    Converts a Unicode string to a bytes object.
+    """Converts a Unicode string to a bytes object.
 
     :param unicode_string: The Unicode string to convert.
     :return: The bytes object converted from the Unicode string.

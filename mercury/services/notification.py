@@ -10,7 +10,8 @@ from flask_restful import fields, reqparse
 
 notification_fields = {
     'category': fields.String,
-    'datetime_send': fields.String,
+    'datetime_schedule': fields.String,
+    'datetime_dispatch': fields.String,
     # Replaces Notification ID with Notification Uri (HATEOAS) through endpoint 'notification'
     'uri': fields.Url('notification')
 }
@@ -25,8 +26,8 @@ def get_request_parser(request_parser=None):
     else:
         result = request_parser
     result.add_argument('category', type=str, required=True, help='No notification category provided', location='json')
-    result.add_argument('datetime_send', type=lambda x: datetime.strptime(x, '%Y-%m-%d %H:%M:%S'), required=False,
-                        help='No notification datetime_send provided', location='json')
+    result.add_argument('datetime_schedule', type=lambda x: datetime.strptime(x, '%Y-%m-%d %H:%M:%S'), required=False,
+                        help='No notification datetime_schedule provided', location='json')
     return result
 
 
@@ -42,7 +43,7 @@ def insert_notification(notification):
     return {
         '_id': mongo.db.notification.insert_one(notification).inserted_id,
         'category': notification['category'],
-        'datetime_send': notification['datetime_send']
+        'datetime_schedule': notification['datetime_schedule']
     }
 
 
@@ -52,10 +53,10 @@ def update_notification(id, notification):
         return {
             '_id': id,
             'category': notification['category'],
-            'datetime_send': notification['datetime_send']
+            'datetime_schedule': notification['datetime_schedule']
         }
     else:
-        return {'result': False}
+        return None
 
 
 def delete_notification(id):
@@ -65,11 +66,13 @@ def delete_notification(id):
 '''Other Functions'''
 
 
-def find_notifications_to_send():
-    """Find all notifications that have datetime_send lower than now (local time).
+def find_notifications_to_dispatch():
+    """Find all notifications that have datetime_schedule lower than now (local time) and that they haven't already been
+     dispatched.
 
-    :return: Cursor to manage notifications to send.
+    :return: Cursor to manage notifications to dispatch.
     """
     return mongo.db.notification.find({
-        'datetime_send': {'$lt': datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
+        'datetime_schedule': {'$lte': datetime.now().strftime('%Y-%m-%d %H:%M:%S')},
+        'datetime_dispatch': None
     })

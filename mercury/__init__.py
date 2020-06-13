@@ -3,7 +3,7 @@
 '''Work in progress.
 
 TODO:
-- Auth, with registration by CLI;
+- Auth and Registration into SQLDB from CLI;
 '''
 
 from .services.database_sql import init_app as init_database_sql

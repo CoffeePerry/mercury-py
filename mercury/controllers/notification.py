@@ -38,8 +38,10 @@ class NotificationAPI(Resource):
     def put(self, _id):
         if not request.json:
             abort(400)
-        return {'notification': marshal(services_notification.update_notification(_id, request.json),
-                                        services_notification.notification_fields)}
+        result = services_notification.update_notification(_id, request.json)
+        if result is None:
+            return {'result': False}
+        return {'notification': marshal(result, services_notification.notification_fields)}
 
     def delete(self, _id):
         return {'result': services_notification.delete_notification(_id)}
