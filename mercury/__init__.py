@@ -1,11 +1,5 @@
 # coding=utf-8
 
-'''Work in progress.
-
-TODO:
-- Auth and Registration into SQLDB from CLI;
-'''
-
 from .services.database_sql import init_app as init_database_sql
 from .services.database_nosql_mongo import init_app as init_database_nosql_mongo
 from .services.hashing import init_app as init_hashing
