@@ -6,7 +6,7 @@ from .services.hashing import init_app as init_hashing
 from .services.tasks import init_app as init_tasks
 from .services.tasks.notification import init_app as init_notification
 
-import os
+from os import path, makedirs
 
 from flask import Flask, send_from_directory
 from flask_restful import Api
@@ -27,8 +27,8 @@ def create_app():
 
     # Ensure the instance folder exists
     try:
-        if not os.path.isdir(app.instance_path):
-            os.makedirs(app.instance_path)
+        if not path.isdir(app.instance_path):
+            makedirs(app.instance_path)
             raise Exception('Directory not found, so just created. Put file "config.py" inside, please.')
     except OSError as ex:
         app.logger.error(str(ex))
@@ -68,7 +68,7 @@ def create_app():
 
         :return: Mercury favicon.ico.
         """
-        return send_from_directory(os.path.join(app.root_path, 'static'),
+        return send_from_directory(path.join(app.root_path, 'static'),
                                    'favicon.ico', mimetype='image/vnd.microsoft.icon')
 
     @app.cli.command('info')
