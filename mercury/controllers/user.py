@@ -1,13 +1,15 @@
 # coding=utf-8
 
 from mercury.services import user as services_user
+from mercury.services.custom_exceptions import HTTPException
 
 from flask import abort, request
 from flask_restful import Resource, marshal
+from flask_jwt_extended import jwt_required, get_jwt_identity
 
 
 class UserListAPI(Resource):
-    # decorators = []
+    decorators = [jwt_required]
 
     def __init__(self):
         """UserListAPI constructor."""
@@ -19,6 +21,8 @@ class UserListAPI(Resource):
 
         :return: All users.
         """
+        if not services_user.check_if_user_is_admin(get_jwt_identity()):
+            abort(401)
         return {'users': [marshal(user, services_user.user_fields) for user in services_user.select_users()]}
 
     def post(self):
@@ -26,14 +30,16 @@ class UserListAPI(Resource):
 
         :return: Persisted user's JSON or error.
         """
+        if not services_user.check_if_user_is_admin(get_jwt_identity()):
+            abort(401)
         if not request.json:
             abort(400)
         user = {key: value for key, value in self.reqparse.parse_args().items() if value is not None}
-        return {'user': marshal(services_user.insert_user(user), services_user.user_fields)}, 201
+        return {'user': marshal(services_user.insert_user(user['username']), services_user.user_fields)}, 201
 
 
 class UserAPI(Resource):
-    # decorators = []
+    decorators = [jwt_required]
 
     def __init__(self):
         """UserAPI constructor."""
@@ -46,6 +52,8 @@ class UserAPI(Resource):
         :param id: User's id to find.
         :return: User found as JSON.
         """
+        if get_jwt_identity() != id:
+            abort(401)
         return {'user': marshal(services_user.select_user(id), services_user.user_fields)}
 
     def put(self, id):
@@ -54,6 +62,8 @@ class UserAPI(Resource):
         :param id: User's id to find.
         :return: Persisted user's base informations as JSON or error.
         """
+        if get_jwt_identity() != id:
+            abort(401)
         if not request.json:
             abort(400)
         user = services_user.select_user(id)
@@ -66,4 +76,26 @@ class UserAPI(Resource):
         :param id: User's id to find.
         :return: True if elimination was successful or False if elimination was not possible.
         """
+        if get_jwt_identity() != id:
+            abort(401)
         return {'result': services_user.delete_user(id)}
+
+
+class UserLoginAPI(Resource):
+    def __init__(self):
+        """UserLoginAPI constructor."""
+        self.reqparse = services_user.get_request_parser(is_login_request=True)
+        super(UserLoginAPI, self).__init__()
+
+    def post(self):
+        """Post
+
+        :return: User's access_token as JSON or error.
+        """
+        if not request.json:
+            abort(400)
+        user = {key: value for key, value in self.reqparse.parse_args().items() if value is not None}
+        try:
+            return {'user': marshal(services_user.login_user(user), services_user.user_login_fields)}
+        except HTTPException as ex:
+            return {'error': str(ex)}, ex.code

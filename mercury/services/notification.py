@@ -36,47 +36,58 @@ def get_request_parser(request_parser=None):
     return result
 
 
-def select_notification(id):
-    """Get notification by id param.
+def select_notification(id, user_id):
+    """Get notification by id param and user_id.
 
     :param id: Notification's id to find.
+    :param user_id: Notification's user_id to find.
     :return: Notification found or error 404.
     """
-    return mongo.db.notification.find_one_or_404({'_id': ObjectId(id)})
+    return mongo.db.notification.find_one_or_404({'_id': ObjectId(id), 'user_id': user_id})
 
 
-def select_notifications():
-    """Get all notifications.
+def select_notifications(user_id):
+    """Get all notifications by user_id.
 
+    :param user_id: Notification's user_id to find.
     :return: All notifications.
     """
-    return mongo.db.notification.find()
+    return mongo.db.notification.find({'user_id': user_id})
 
 
-def insert_notification(notification):
-    """Post the notification passed by notification param (MongoDB has limit of 16 megabytes per document).
+def insert_notification(notification, user_id):
+    """Post new notification from notification param (MongoDB has limit of 16 megabytes per document) for user_id.
 
     :param notification: Notification to persist.
+    :param user_id: Notification's user_id to persist.
     :return: Persisted notification's base informations or error.
     """
+    notification['user_id'] = user_id
     return {
         '_id': mongo.db.notification.insert_one(notification).inserted_id,
+        'user_id': user_id,
         'category': notification['category'],
         'datetime_schedule': notification['datetime_schedule']
     }
 
 
-def update_notification(id, notification):
-    """Put the notification passed by notification param (MongoDB has limit of 16 megabytes per document).
+def update_notification(id, notification, user_id=None):
+    """Put the notification passed by notification param (MongoDB has limit of 16 megabytes per document) for user_id.
 
     :param id: Notification's id to find.
+    :param user_id: Notification's user_id to find.
     :param notification: Notification to persist.
     :return: Persisted notification's base informations or error.
     """
-    notification_found = mongo.db.notification.find_one_or_404({'_id': ObjectId(id)})
+    if user_id is None:
+        user_id = notification['user_id']
+    else:
+        notification['user_id'] = user_id
+    notification_found = mongo.db.notification.find_one_or_404({'_id': ObjectId(id), 'user_id': user_id})
     if mongo.db.notification.update_one({'_id': notification_found['_id']}, {'$set': notification}).acknowledged:
         return {
             '_id': id,
+            'user_id': user_id,
             'category': notification['category'],
             'datetime_schedule': notification['datetime_schedule']
         }
@@ -84,13 +95,14 @@ def update_notification(id, notification):
         return None
 
 
-def delete_notification(id):
+def delete_notification(id, user_id):
     """Delete the notification that have the passed notification id.
 
     :param id: Notification's id to find.
+    :param user_id: Notification's user_id to find.
     :return: True if elimination was successful or False if elimination was not possible.
     """
-    return mongo.db.notification.remove({'_id': ObjectId(id)})['ok'] == 1.0
+    return mongo.db.notification.remove({'_id': ObjectId(id), 'user_id': user_id})['ok'] == 1.0
 
 
 '''Other Functions'''

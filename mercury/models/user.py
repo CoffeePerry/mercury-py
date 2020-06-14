@@ -1,20 +1,23 @@
 # coding=utf-8
 
 from mercury.services.database_sql import db
-from mercury.services.hashing import hashing, bcrypt_handle_long_password
 
 from datetime import datetime
 from typing import Final
+from secrets import token_hex, compare_digest
 
 
 class User(db.Model):
-    _BCRYPT_MAX_LENGTH: Final = 72  # Bcrypt hash max bytes length
+    _SECRET_MAX_LENGTH: Final = 128  # Secret max bytes length: 64 bytes (512 bit) * 2 = 128 bytes (because hex stored)
 
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(254), index=True, unique=True, nullable=False)
-    password = db.Column(db.Binary(_BCRYPT_MAX_LENGTH), nullable=False)
+    password = db.Column(db.String(_SECRET_MAX_LENGTH), nullable=False)
     creation_datetime = db.Column(db.DateTime, nullable=False, default=datetime.utcnow())
     active = db.Column(db.Boolean, nullable=False, default=True)
+    admin = db.Column(db.Boolean, nullable=False, default=False)
+
+    access_token = None
 
     def __repr__(self):
         """Returns user representation.
@@ -23,18 +26,14 @@ class User(db.Model):
         """
         return '<User %r>' % self.username
 
-    @bcrypt_handle_long_password
-    def hash_password(self, password):
-        """Hash the passed plain password and save it to the user.
-
-        :param password: The plain password.
-        """
-        self.password = hashing.generate_password_hash(password)
+    def generate_password(self):
+        """Generate a password and save it to user."""
+        self.password = token_hex(self._SECRET_MAX_LENGTH)
 
     def verify_password(self, password):
-        """Verify the passed plain password against the user's hashed password.
+        """Verify the passed password against user's password.
 
-        :param password: The plain password to compare.
-        :return: The outcome of the comparison.
+        :param password: Password to compare.
+        :return: Outcome of the comparison, True if password is correct, otherwise False.
         """
-        return hashing.check_password_hash(self.password, password)
+        return compare_digest(self.password, password)

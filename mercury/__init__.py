@@ -2,7 +2,7 @@
 
 from .services.database_sql import init_app as init_database_sql
 from .services.database_nosql_mongo import init_app as init_database_nosql_mongo
-from .services.hashing import init_app as init_hashing
+from .services.auth import init_app as init_auth
 from .services.tasks import init_app as init_tasks
 from .services.tasks.notification import init_app as init_notification
 
@@ -43,7 +43,8 @@ def create_app():
 
     init_database_sql(app)
     init_database_nosql_mongo(app)
-    init_hashing(app)
+
+    init_auth(app)
 
     # Load routes after load other services
     from .services.routes import init_api
