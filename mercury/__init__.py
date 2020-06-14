@@ -30,8 +30,10 @@ def create_app():
         if not os.path.isdir(app.instance_path):
             os.makedirs(app.instance_path)
             raise Exception('Directory not found, so just created. Put file "config.py" inside, please.')
-    except OSError:
-        pass  # TODO: Log
+    except OSError as ex:
+        app.logger.error(str(ex))
+    except Exception as ex:
+        app.logger.exception(str(ex))
 
     from instance.config import ProductionConfig, DevelopmentConfig
     if app.env == 'production':
