@@ -17,7 +17,7 @@ notification_fields = {
 }
 
 
-'''API Functions'''
+'''CRUD Functions'''
 
 
 def get_request_parser(request_parser=None):

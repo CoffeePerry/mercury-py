@@ -38,7 +38,7 @@ def get_request_parser(request_parser=None, is_login_request=False):
     return result
 
 
-'''API Functions'''
+'''CRUD Functions'''
 
 
 def select_user(id):
