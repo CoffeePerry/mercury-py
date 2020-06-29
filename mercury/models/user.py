@@ -2,8 +2,8 @@
 
 from mercury.services.database_sql import db
 
-from datetime import datetime
 from typing import Final
+from datetime import datetime
 from secrets import token_hex, compare_digest
 
 

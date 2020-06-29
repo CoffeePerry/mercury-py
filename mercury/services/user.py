@@ -138,6 +138,8 @@ def register_user(username):
 
     :param username: New user's username.
     """
+    if not username:
+        print('Please, enter an unique Username.')
     response = input(f'Are you really sure to register new user {username}? [Y/n]:')
     if response == 'Y':
         user = insert_user(username)
