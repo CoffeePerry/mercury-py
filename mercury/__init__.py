@@ -78,6 +78,6 @@ def create_app():
 
         :return: Mercury info.
         """
-        print(f'Mercury v{__version__} ready!')
+        print(f'Mercury v{__version__} CLI ready!')
 
     return app
