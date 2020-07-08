@@ -33,6 +33,6 @@ def create_database():
 def drop_database():
     """Drop the database."""
     response = input('Are you really sure to delete the SQL database and all the data it contains? [Y/n]:')
-    if response == 'Y':
+    if response.lower() == 'y':
         db.drop_all()
         print('Database SQL dropped')

@@ -8,11 +8,11 @@ from secrets import token_hex, compare_digest
 
 
 class User(db.Model):
-    _SECRET_MAX_LENGTH: Final = 128  # Secret max bytes length: 64 bytes (512 bit) * 2 = 128 bytes (because hex stored)
+    _PASSWORD_STORED_MAX_LENGTH: Final = 128  # Password max bytes length: 64 bytes (512 bit) * 2 = 128 bytes (because hex stored)
 
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(254), index=True, unique=True, nullable=False)
-    password = db.Column(db.String(_SECRET_MAX_LENGTH), nullable=False)
+    password = db.Column(db.String(_PASSWORD_STORED_MAX_LENGTH), nullable=False)
     creation_datetime = db.Column(db.DateTime, nullable=False, default=datetime.utcnow())
     active = db.Column(db.Boolean, nullable=False, default=True)
     admin = db.Column(db.Boolean, nullable=False, default=False)
@@ -28,7 +28,7 @@ class User(db.Model):
 
     def generate_password(self):
         """Generate a password and save it to user."""
-        self.password = token_hex(self._SECRET_MAX_LENGTH)
+        self.password = token_hex(int(self._PASSWORD_STORED_MAX_LENGTH / 2))
 
     def verify_password(self, password):
         """Verify the passed password against user's password.
