@@ -4,6 +4,8 @@ from .custom_exceptions import HTTPException
 from mercury.models.user import User
 from mercury.services.database_sql import db, db_cli
 
+from datetime import timedelta
+
 from flask_restful import fields, reqparse
 from flask_jwt_extended import create_access_token
 from click import argument
@@ -113,7 +115,9 @@ def login_user(user):
         raise HTTPException('Missing password parameter', code=400)
     db_user = User.query.filter(User.username == username).scalar()
     if db_user and db_user.verify_password(password):
-        db_user.access_token = create_access_token(identity=db_user.id)
+        if not db_user.active:
+            raise HTTPException('User inactive', code=401)
+        db_user.access_token = create_access_token(identity=db_user.id, expires_delta=timedelta(days=365))
         return db_user
     else:
         raise HTTPException('Bad username or password', code=401)
