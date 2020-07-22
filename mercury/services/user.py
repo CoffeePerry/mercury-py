@@ -145,6 +145,6 @@ def register_user(username):
     if not username:
         print('Please, enter an unique Username.')
     response = input(f'Are you really sure to register new user {username}? [Y/n]:')
-    if response == 'Y':
+    if response.lower() == 'y':
         user = insert_user(username)
         print(f'{user} successfully created')
