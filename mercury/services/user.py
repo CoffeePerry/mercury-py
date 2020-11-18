@@ -1,11 +1,11 @@
 # coding=utf-8
 
-from .custom_exceptions import HTTPException
 from mercury.models.user import User
 from mercury.services.database_sql import db, db_cli
 
 from datetime import timedelta
 
+from werkzeug.exceptions import BadRequest, Unauthorized, Forbidden
 from flask_restful import fields, reqparse
 from flask_jwt_extended import create_access_token
 from click import argument
@@ -15,7 +15,9 @@ user_fields = {
     'username': fields.String,
     'creation_datetime': fields.String,
     'active': fields.Boolean,
-    'uri': fields.Url('user')  # Replaces User ID with User Uri (HATEOAS) through endpoint 'user'
+    'links': {
+        'self': fields.Url('user')  # Replaces User ID with User Uri (HATEOAS) through endpoint 'user'
+    }
 }
 
 """Fields to marshal user login info to JSON."""
@@ -109,18 +111,18 @@ def login_user(user):
     """
     username = user.get('username')
     if username is None:
-        raise HTTPException('Missing username parameter', code=400)
+        raise BadRequest('Missing username parameter')
     password = user.get('password')
     if password is None:
-        raise HTTPException('Missing password parameter', code=400)
+        raise BadRequest('Missing password parameter')
     db_user = User.query.filter(User.username == username).scalar()
     if db_user and db_user.verify_password(password):
         if not db_user.active:
-            raise HTTPException('User inactive', code=401)
-        db_user.access_token = create_access_token(identity=db_user.id, expires_delta=timedelta(days=365))
+            raise Forbidden('User inactive')
+        db_user.access_token = create_access_token(identity=db_user.id, expires_delta=timedelta(days=1))
         return db_user
     else:
-        raise HTTPException('Bad username or password', code=401)
+        raise Unauthorized('Bad username or password')
 
 
 def check_if_user_is_admin(id):

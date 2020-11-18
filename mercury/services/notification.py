@@ -12,8 +12,10 @@ notification_fields = {
     'category': fields.String,
     'datetime_schedule': fields.String,
     'datetime_dispatch': fields.String,
-    # Replaces Notification ID with Notification Uri (HATEOAS) through endpoint 'notification'
-    'uri': fields.Url('notification')
+    'links': {
+        # Replaces Notification ID with Notification Uri (HATEOAS) through endpoint 'notification'
+        'self': fields.Url('notification')
+    }
 }
 
 
