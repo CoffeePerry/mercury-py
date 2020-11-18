@@ -1,0 +1,182 @@
+{
+	"info": {
+		"_postman_id": "ae8fc551-66a0-4b61-ae55-0ec62de70acc",
+		"name": "mercury-py",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "User",
+			"item": [
+				{
+					"name": "AUTH User :: Wrong password",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "877f81ea-8dff-474a-b94f-a7f320eeec5e",
+								"exec": [
+									"pm.test(\"Status code is 401\", function () {\r",
+									"    pm.response.to.have.status(401);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Body isn't a user\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.message).to.eql(\"Bad username or password\");\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept-Version",
+								"type": "text",
+								"value": "1.0"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\": \"developer\",\r\n    \"password\": \"1c257328bea9ac00edacf3196afa70c1303e288412004ec8f48ac7bc0e8338351376cb549f864a9325597275a12105437ab892cf8d1ff1ee2337b4b8883530b1\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{server}}mercury/api/users/login/",
+							"host": [
+								"{{server}}mercury"
+							],
+							"path": [
+								"api",
+								"users",
+								"login",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "AUTH User",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "40d80495-d7dc-463b-9377-e173cdd02418",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Body is developer user\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.user.username).is.eql(\"developer\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"User have self reference\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.user.links).to.have.property(\"self\");\r",
+									"    pm.collectionVariables.set(\"link_user\", jsonData.user.links.self);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"User have an access_token\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.user).to.have.property(\"access_token\");\r",
+									"    pm.collectionVariables.set(\"access_token\", jsonData.user.access_token);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept-Version",
+								"value": "1.0",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\": \"developer\",\r\n    \"password\": \"1c257328bea9ac00edacf3196afa70c1303e288412004ec8f48ac7bc0e8438351376cb549f864a9325597275a12105437ab892cf8d1ff1ee2337b4b8883530b1\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{server}}mercury/api/users/login/",
+							"host": [
+								"{{server}}mercury"
+							],
+							"path": [
+								"api",
+								"users",
+								"login",
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Notification",
+			"item": [],
+			"protocolProfileBehavior": {}
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "783c56c7-97ad-441e-a5ba-7bf14e2c6f32",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "61a400b5-1266-4943-8c28-7e091a0c9d76",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"id": "180a3a61-d2e6-455e-8164-80282fac1543",
+			"key": "server",
+			"value": "http://127.0.0.1:5000/"
+		},
+		{
+			"id": "9381732b-a05b-4a83-a59e-cb841e183bd1",
+			"key": "access_token",
+			"value": ""
+		},
+		{
+			"id": "934fd970-ff0a-4815-9e29-23f17b08c99c",
+			"key": "link_user",
+			"value": ""
+		}
+	],
+	"protocolProfileBehavior": {}
+}
