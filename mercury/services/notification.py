@@ -65,6 +65,8 @@ def insert_notification(notification, user_id):
     :return: Persisted notification's base informations or error.
     """
     notification['user_id'] = user_id
+    notification['datetime_schedule'] = notification.get('datetime_schedule',
+                                                         datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
     return {
         '_id': mongo.db.notification.insert_one(notification).inserted_id,
         'user_id': user_id,
