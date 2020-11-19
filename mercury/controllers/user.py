@@ -47,10 +47,8 @@ class UserAPI(Resource):
 
     def __init__(self):
         """UserAPI constructor."""
-        if request.headers.get('Accept-Version', '1.0') == '1.0':
-            self.reqparse = services_user.get_request_parser()
-            super(UserAPI, self).__init__()
-        raise MethodVersionNotFound()
+        self.reqparse = services_user.get_request_parser()
+        super(UserAPI, self).__init__()
 
     def get(self, id):
         """GET
@@ -59,7 +57,7 @@ class UserAPI(Resource):
         :return: User found as JSON.
         """
         if request.headers.get('Accept-Version', '1.0') == '1.0':
-            if get_jwt_identity() != id:
+            if get_jwt_identity() != id and (not services_user.check_if_user_is_admin(get_jwt_identity())):
                 abort(401)
             return {'user': marshal(services_user.select_user(id), services_user.user_fields)}
         raise MethodVersionNotFound()
@@ -71,7 +69,7 @@ class UserAPI(Resource):
         :return: Persisted user's base informations as JSON or error.
         """
         if request.headers.get('Accept-Version', '1.0') == '1.0':
-            if get_jwt_identity() != id:
+            if get_jwt_identity() != id and (not services_user.check_if_user_is_admin(get_jwt_identity())):
                 abort(401)
             if not request.json:
                 abort(400)
@@ -87,7 +85,7 @@ class UserAPI(Resource):
         :return: True if elimination was successful or False if elimination was not possible.
         """
         if request.headers.get('Accept-Version', '1.0') == '1.0':
-            if get_jwt_identity() != id:
+            if get_jwt_identity() != id and (not services_user.check_if_user_is_admin(get_jwt_identity())):
                 abort(401)
             return {'result': services_user.delete_user(id)}
         raise MethodVersionNotFound()

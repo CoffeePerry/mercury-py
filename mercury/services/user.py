@@ -6,7 +6,7 @@ from mercury.services.database_sql import db, db_cli
 from datetime import timedelta
 
 from werkzeug.exceptions import BadRequest, Unauthorized, Forbidden
-from flask_restful import fields, reqparse
+from flask_restful import fields, reqparse, inputs
 from flask_jwt_extended import create_access_token
 from click import argument
 
@@ -39,6 +39,7 @@ def get_request_parser(request_parser=None, is_login_request=False):
     result.add_argument('username', type=str, required=True, help='No user username provided', location='json')
     if is_login_request:
         result.add_argument('password', type=str, required=True, help='No user password provided', location='json')
+    result.add_argument('active', type=inputs.boolean, required=False, help='No user active provided', location='json')
     return result
 
 

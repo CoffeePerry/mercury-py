@@ -16,13 +16,14 @@
 							"script": {
 								"id": "877f81ea-8dff-474a-b94f-a7f320eeec5e",
 								"exec": [
-									"pm.test(\"Status code is 401\", function () {\r",
+									"pm.test('Status code is 401', function () {\r",
 									"    pm.response.to.have.status(401);\r",
 									"});\r",
 									"\r",
-									"pm.test(\"Body isn't a user\", function () {\r",
+									"pm.test('Body isn\\'t a user', function () {\r",
 									"    var jsonData = pm.response.json();\r",
-									"    pm.expect(jsonData.message).to.eql(\"Bad username or password\");\r",
+									"    pm.expect(jsonData).to.have.property('message');\r",
+									"    pm.expect(jsonData.message).to.eql('Bad username or password');\r",
 									"});\r",
 									""
 								],
@@ -49,11 +50,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{server}}mercury/api/users/login/",
+							"raw": "{{server}}/mercury/api/users/login/",
 							"host": [
-								"{{server}}mercury"
+								"{{server}}"
 							],
 							"path": [
+								"mercury",
 								"api",
 								"users",
 								"login",
@@ -71,25 +73,34 @@
 							"script": {
 								"id": "40d80495-d7dc-463b-9377-e173cdd02418",
 								"exec": [
-									"pm.test(\"Status code is 200\", function () {\r",
+									"pm.test('Status code is 200', function () {\r",
 									"    pm.response.to.have.status(200);\r",
 									"});\r",
 									"\r",
-									"pm.test(\"Body is developer user\", function () {\r",
+									"pm.test('Response have proper body', function () {\r",
 									"    var jsonData = pm.response.json();\r",
-									"    pm.expect(jsonData.user.username).is.eql(\"developer\");\r",
+									"    pm.expect(jsonData).to.have.property('user');\r",
+									"    pm.expect(jsonData.user).to.have.property('username');\r",
+									"    pm.expect(jsonData.user).to.have.property('creation_datetime');\r",
+									"    pm.expect(jsonData.user).to.have.property('active');\r",
+									"    pm.expect(jsonData.user).to.have.property('access_token');\r",
+									"    pm.expect(jsonData.user).to.have.property('links');\r",
+									"    pm.expect(jsonData.user.links).to.have.property('self');\r",
 									"});\r",
 									"\r",
-									"pm.test(\"User have self reference\", function () {\r",
+									"pm.test('Body is user: developer', function () {\r",
 									"    var jsonData = pm.response.json();\r",
-									"    pm.expect(jsonData.user.links).to.have.property(\"self\");\r",
-									"    pm.collectionVariables.set(\"link_user\", jsonData.user.links.self);\r",
+									"    pm.expect(jsonData).to.have.property('user');\r",
+									"    pm.expect(jsonData.user).to.have.property('username');\r",
+									"    pm.expect(jsonData.user.username).is.eql('developer');\r",
 									"});\r",
 									"\r",
-									"pm.test(\"User have an access_token\", function () {\r",
+									"pm.test('User have an access_token', function () {\r",
 									"    var jsonData = pm.response.json();\r",
-									"    pm.expect(jsonData.user).to.have.property(\"access_token\");\r",
-									"    pm.collectionVariables.set(\"access_token\", jsonData.user.access_token);\r",
+									"    pm.expect(jsonData).to.have.property('user');\r",
+									"    pm.expect(jsonData.user).to.have.property('access_token');\r",
+									"    \r",
+									"    pm.collectionVariables.set('access_token', jsonData.user.access_token);\r",
 									"});\r",
 									""
 								],
@@ -116,15 +127,413 @@
 							}
 						},
 						"url": {
-							"raw": "{{server}}mercury/api/users/login/",
+							"raw": "{{server}}/mercury/api/users/login/",
 							"host": [
-								"{{server}}mercury"
+								"{{server}}"
 							],
 							"path": [
+								"mercury",
 								"api",
 								"users",
 								"login",
 								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET Users",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "a499614e-522e-4f4c-99ae-45c1b908ff0d",
+								"exec": [
+									"pm.test('Status code is 200', function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test('Body is users', function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData).to.have.property('users');\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "a23b5ff5-becb-4c9d-86e2-84d023b1e62f",
+								"exec": [
+									"pm.sendRequest({\r",
+									"    url: pm.collectionVariables.get('server') + '/mercury/api/users/login/',\r",
+									"    method: 'POST',\r",
+									"    header: {\r",
+									"        'Accept-Version': '1.0',\r",
+									"        'Content-Type': 'application/json'\r",
+									"    },\r",
+									"    body: {\r",
+									"        mode: 'raw',\r",
+									"        raw: JSON.stringify({\r",
+									"            'username': 'administrator',\r",
+									"            'password': '8bcfe840e5e5379af91068d99afaa9fefb3f057f2950f6083bb63d592789e58999d2e87b732f9bc0ec63318d95ce9708d25896c4d92fc5e67bab53099aa29088'\r",
+									"        })\r",
+									"    }\r",
+									"}, function (err, response) {\r",
+									"    var jsonData = response.json();\r",
+									"    pm.expect(jsonData).to.have.property('user');\r",
+									"    pm.expect(jsonData.user).to.have.property('username');\r",
+									"    pm.expect(jsonData.user.username).is.eql('administrator');\r",
+									"    pm.expect(jsonData.user).to.have.property('access_token');\r",
+									"\r",
+									"    pm.collectionVariables.set('access_token_admin', jsonData.user.access_token);\r",
+									"\r",
+									"    pm.expect(jsonData.user).to.have.property('links');\r",
+									"    pm.expect(jsonData.user.links).to.have.property('self');\r",
+									"    \r",
+									"    pm.collectionVariables.set('link_user_admin', jsonData.user.links.self);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token_admin}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept-Version",
+								"type": "text",
+								"value": "1.0"
+							}
+						],
+						"url": {
+							"raw": "{{server}}/mercury/api/users/",
+							"host": [
+								"{{server}}"
+							],
+							"path": [
+								"mercury",
+								"api",
+								"users",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "POST User",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "8005d999-918e-4bac-a837-9b336895ac48",
+								"exec": [
+									"pm.test('Status code is 201', function () {\r",
+									"    pm.response.to.have.status(201);\r",
+									"});\r",
+									"\r",
+									"pm.test('Response have proper body', function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData).to.have.property('user');\r",
+									"    pm.expect(jsonData.user).to.have.property('username');\r",
+									"    pm.expect(jsonData.user).to.have.property('creation_datetime');\r",
+									"    pm.expect(jsonData.user).to.have.property('active');\r",
+									"    pm.expect(jsonData.user).to.have.property('links');\r",
+									"    pm.expect(jsonData.user.links).to.have.property('self');\r",
+									"\r",
+									"    pm.collectionVariables.set('link_user', jsonData.user.links.self);\r",
+									"});\r",
+									"\r",
+									"pm.test('Body is user: user-primis', function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData).to.have.property('user');\r",
+									"    pm.expect(jsonData.user).to.have.property('username');\r",
+									"    pm.expect(jsonData.user.username).is.eql('user-primis');\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "ee24b5b4-0fc1-4ce6-911a-3ffc8981ecf0",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token_admin}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept-Version",
+								"type": "text",
+								"value": "1.0"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\": \"user-primis\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{server}}/mercury/api/users/",
+							"host": [
+								"{{server}}"
+							],
+							"path": [
+								"mercury",
+								"api",
+								"users",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET User",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "14f114ff-5b29-461e-879d-ba13eabc9d7c",
+								"exec": [
+									"pm.test('Status code is 200', function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test('Response have proper body', function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData).to.have.property('user');\r",
+									"    pm.expect(jsonData.user).to.have.property('username');\r",
+									"    pm.expect(jsonData.user).to.have.property('creation_datetime');\r",
+									"    pm.expect(jsonData.user).to.have.property('active');\r",
+									"    pm.expect(jsonData.user).to.have.property('links');\r",
+									"    pm.expect(jsonData.user.links).to.have.property('self');\r",
+									"});\r",
+									"\r",
+									"pm.test('Body is user: user-primis', function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData).to.have.property('user');\r",
+									"    pm.expect(jsonData.user).to.have.property('username');\r",
+									"    pm.expect(jsonData.user.username).is.eql('user-primis');\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "e739edee-cc15-4eab-a911-c2f863fecd64",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token_admin}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept-Version",
+								"type": "text",
+								"value": "1.0"
+							}
+						],
+						"url": {
+							"raw": "{{server}}{{link_user}}",
+							"host": [
+								"{{server}}{{link_user}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "PUT User",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "897f2fbd-0bfc-4d27-9720-997ba61942e4",
+								"exec": [
+									"pm.test('Status code is 200', function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test('Response have proper body', function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData).to.have.property('user');\r",
+									"    pm.expect(jsonData.user).to.have.property('username');\r",
+									"    pm.expect(jsonData.user).to.have.property('creation_datetime');\r",
+									"    pm.expect(jsonData.user).to.have.property('active');\r",
+									"    pm.expect(jsonData.user).to.have.property('links');\r",
+									"    pm.expect(jsonData.user.links).to.have.property('self');\r",
+									"});\r",
+									"\r",
+									"pm.test('Body is user: user-primis', function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData).to.have.property('user');\r",
+									"    pm.expect(jsonData.user).to.have.property('username');\r",
+									"    pm.expect(jsonData.user.username).is.eql('user-primis');\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "aa2f2c18-5929-40f3-bdae-f10af6a9321a",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token_admin}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Accept-Version",
+								"type": "text",
+								"value": "1.0"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\": \"user-primis\",\r\n    \"active\": false\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{server}}{{link_user}}",
+							"host": [
+								"{{server}}{{link_user}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DELETE User",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "36de1078-8a63-4c59-9278-59488efc7b3d",
+								"exec": [
+									"pm.test('Status code is 200', function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test('Response have proper body', function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData).to.have.property('result');\r",
+									"    pm.expect(jsonData.result).is.eql(true);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "344af241-0cae-46cb-9249-d16d1e53ac3c",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token_admin}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Accept-Version",
+								"type": "text",
+								"value": "1.0"
+							}
+						],
+						"url": {
+							"raw": "{{server}}{{link_user}}",
+							"host": [
+								"{{server}}{{link_user}}"
 							]
 						}
 					},
@@ -163,18 +572,28 @@
 	],
 	"variable": [
 		{
-			"id": "180a3a61-d2e6-455e-8164-80282fac1543",
+			"id": "bbec748c-084c-496a-a7b6-5ef41ccdcc1d",
 			"key": "server",
-			"value": "http://127.0.0.1:5000/"
+			"value": "http://127.0.0.1:5000"
 		},
 		{
-			"id": "9381732b-a05b-4a83-a59e-cb841e183bd1",
+			"id": "2bd51b46-00b5-4f77-a1ad-1092759c0f38",
 			"key": "access_token",
 			"value": ""
 		},
 		{
-			"id": "934fd970-ff0a-4815-9e29-23f17b08c99c",
+			"id": "8fac5baf-21fc-44f9-aa80-fe102c8074d0",
 			"key": "link_user",
+			"value": ""
+		},
+		{
+			"id": "f0af82c7-fb82-4add-94c8-1e5337382fa5",
+			"key": "access_token_admin",
+			"value": ""
+		},
+		{
+			"id": "b2f93cfc-abc8-4ad8-a504-a764aebdfdc4",
+			"key": "link_user_admin",
 			"value": ""
 		}
 	],
