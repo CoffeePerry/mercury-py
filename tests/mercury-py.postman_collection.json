@@ -9,7 +9,7 @@
 			"name": "User",
 			"item": [
 				{
-					"name": "AUTH User :: Wrong password",
+					"name": "Auth User :: Wrong password",
 					"event": [
 						{
 							"listen": "test",
@@ -66,7 +66,7 @@
 					"response": []
 				},
 				{
-					"name": "AUTH User",
+					"name": "Auth User",
 					"event": [
 						{
 							"listen": "test",
@@ -143,7 +143,7 @@
 					"response": []
 				},
 				{
-					"name": "GET Users",
+					"name": "Users",
 					"event": [
 						{
 							"listen": "test",
@@ -187,13 +187,13 @@
 									"    pm.expect(jsonData).to.have.property('user');\r",
 									"    pm.expect(jsonData.user).to.have.property('username');\r",
 									"    pm.expect(jsonData.user.username).is.eql('administrator');\r",
+									"    pm.expect(jsonData.user).to.have.property('creation_datetime');\r",
+									"    pm.expect(jsonData.user).to.have.property('active');\r",
 									"    pm.expect(jsonData.user).to.have.property('access_token');\r",
-									"\r",
-									"    pm.collectionVariables.set('access_token_admin', jsonData.user.access_token);\r",
-									"\r",
 									"    pm.expect(jsonData.user).to.have.property('links');\r",
 									"    pm.expect(jsonData.user.links).to.have.property('self');\r",
-									"    \r",
+									"\r",
+									"    pm.collectionVariables.set('access_token_admin', jsonData.user.access_token);    \r",
 									"    pm.collectionVariables.set('link_user_admin', jsonData.user.links.self);\r",
 									"});\r",
 									""
@@ -237,7 +237,7 @@
 					"response": []
 				},
 				{
-					"name": "POST User",
+					"name": "User",
 					"event": [
 						{
 							"listen": "test",
@@ -326,7 +326,7 @@
 					"response": []
 				},
 				{
-					"name": "GET User",
+					"name": "User",
 					"event": [
 						{
 							"listen": "test",
@@ -398,7 +398,7 @@
 					"response": []
 				},
 				{
-					"name": "PUT User",
+					"name": "User",
 					"event": [
 						{
 							"listen": "test",
@@ -479,7 +479,7 @@
 					"response": []
 				},
 				{
-					"name": "DELETE User",
+					"name": "User",
 					"event": [
 						{
 							"listen": "test",
@@ -544,7 +544,562 @@
 		},
 		{
 			"name": "Notification",
-			"item": [],
+			"item": [
+				{
+					"name": "Notifications",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "2ace170c-811f-4e41-b01e-6a0e626f1d55",
+								"exec": [
+									"pm.test('Status code is 200', function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test('Body is notifications', function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData).to.have.property('notifications');\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "72fa4452-9bac-4119-b9fb-637974d4d765",
+								"exec": [
+									"pm.sendRequest({\r",
+									"    url: pm.collectionVariables.get('server') + '/mercury/api/users/',\r",
+									"    method: 'POST',\r",
+									"    header: {\r",
+									"        'Authorization': 'Bearer ' + pm.collectionVariables.get('access_token_admin'),\r",
+									"        'Accept-Version': '1.0',\r",
+									"        'Content-Type': 'application/json'\r",
+									"    },\r",
+									"    body: {\r",
+									"        mode: 'raw',\r",
+									"        raw: JSON.stringify({\r",
+									"            'username': 'user-secundus'\r",
+									"        })\r",
+									"    }\r",
+									"}, function (err, response) {\r",
+									"    var jsonData = response.json();\r",
+									"    pm.expect(jsonData).to.have.property('user');\r",
+									"    pm.expect(jsonData.user).to.have.property('username');\r",
+									"    pm.expect(jsonData.user.username).is.eql('user-secundus');\r",
+									"    pm.expect(jsonData.user).to.have.property('creation_datetime');\r",
+									"    pm.expect(jsonData.user).to.have.property('active');\r",
+									"    pm.expect(jsonData.user).to.have.property('links');\r",
+									"    pm.expect(jsonData.user.links).to.have.property('self');\r",
+									"\r",
+									"    pm.collectionVariables.set('link_user', jsonData.user.links.self);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token_admin}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept-Version",
+								"type": "text",
+								"value": "1.0"
+							}
+						],
+						"url": {
+							"raw": "{{server}}{{link_user}}/notifications/",
+							"host": [
+								"{{server}}{{link_user}}"
+							],
+							"path": [
+								"notifications",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Notification Email Now",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "53fdb13a-47ed-472d-b7ab-df1431ae9ec0",
+								"exec": [
+									"pm.test('Status code is 201', function () {\r",
+									"    pm.response.to.have.status(201);\r",
+									"});\r",
+									"\r",
+									"pm.test('Response have proper body', function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData).to.have.property('notification');\r",
+									"    pm.expect(jsonData.notification).to.have.property('category');\r",
+									"    pm.expect(jsonData.notification).to.have.property('datetime_schedule');\r",
+									"    pm.expect(jsonData.notification).to.have.property('datetime_dispatch');\r",
+									"    pm.expect(jsonData.notification).to.have.property('links');\r",
+									"    pm.expect(jsonData.notification.links).to.have.property('self');\r",
+									"    pm.expect(jsonData.notification.links.self).to.include(pm.collectionVariables.get('link_user'));\r",
+									"\r",
+									"    pm.collectionVariables.set('link_notification', jsonData.notification.links.self);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "b352ee0f-4b00-41b4-af2d-7a2871df162c",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token_admin}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept-Version",
+								"type": "text",
+								"value": "1.0"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"category\": \"email\",\r\n    \"recipients\": \"perinisimone98@gmail.com\",\r\n    \"subject\": \"Test\",\r\n    \"body\": \"Body test\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{server}}{{link_user}}/notifications/",
+							"host": [
+								"{{server}}{{link_user}}"
+							],
+							"path": [
+								"notifications",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Notification Email Now Multi",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "b9f3777c-64bc-41f8-a355-95793afe7252",
+								"exec": [
+									"pm.test('Status code is 201', function () {\r",
+									"    pm.response.to.have.status(201);\r",
+									"});\r",
+									"\r",
+									"pm.test('Response have proper body', function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData).to.have.property('notification');\r",
+									"    pm.expect(jsonData.notification).to.have.property('category');\r",
+									"    pm.expect(jsonData.notification).to.have.property('datetime_schedule');\r",
+									"    pm.expect(jsonData.notification).to.have.property('datetime_dispatch');\r",
+									"    pm.expect(jsonData.notification).to.have.property('links');\r",
+									"    pm.expect(jsonData.notification.links).to.have.property('self');\r",
+									"    pm.expect(jsonData.notification.links.self).to.include(pm.collectionVariables.get('link_user'));\r",
+									"\r",
+									"    pm.collectionVariables.set('link_notification', jsonData.notification.links.self);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "e10f2741-dc8d-4bca-8426-11d8211e0b8e",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token_admin}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept-Version",
+								"type": "text",
+								"value": "1.0"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"category\": \"email\",\r\n    \"recipients\": [\"perinisimone98@gmail.com\", \"perinisimone98@gmail.com\"],\r\n    \"subject\": \"Test\",\r\n    \"body\": \"Body test multi\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{server}}{{link_user}}/notifications/",
+							"host": [
+								"{{server}}{{link_user}}"
+							],
+							"path": [
+								"notifications",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Notification Email Schedule",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "24ef5754-3be5-4ce0-b36d-6ca2386a9235",
+								"exec": [
+									"pm.test('Status code is 201', function () {\r",
+									"    pm.response.to.have.status(201);\r",
+									"});\r",
+									"\r",
+									"pm.test('Response have proper body', function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData).to.have.property('notification');\r",
+									"    pm.expect(jsonData.notification).to.have.property('category');\r",
+									"    pm.expect(jsonData.notification).to.have.property('datetime_schedule');\r",
+									"    pm.expect(jsonData.notification).to.have.property('datetime_dispatch');\r",
+									"    pm.expect(jsonData.notification).to.have.property('links');\r",
+									"    pm.expect(jsonData.notification.links).to.have.property('self');\r",
+									"    pm.expect(jsonData.notification.links.self).to.include(pm.collectionVariables.get('link_user'));\r",
+									"\r",
+									"    pm.collectionVariables.set('link_notification', jsonData.notification.links.self);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "82b33433-feae-4f93-9d8e-56b6079d4b53",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token_admin}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept-Version",
+								"type": "text",
+								"value": "1.0"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"category\": \"email\",\r\n    \"datetime_schedule\": \"2020-12-22 13:00:00\",\r\n    \"recipients\": \"perinisimone98@gmail.com\",\r\n    \"subject\": \"test\",\r\n    \"body\": \"bodyTest\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{server}}{{link_user}}/notifications/",
+							"host": [
+								"{{server}}{{link_user}}"
+							],
+							"path": [
+								"notifications",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Notification",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "1c993734-388a-483d-a3cd-3176570546ca",
+								"exec": [
+									"pm.test('Status code is 200', function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test('Response have proper body', function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData).to.have.property('notification');\r",
+									"    pm.expect(jsonData.notification).to.have.property('category');\r",
+									"    pm.expect(jsonData.notification).to.have.property('datetime_schedule');\r",
+									"    pm.expect(jsonData.notification).to.have.property('datetime_dispatch');\r",
+									"    pm.expect(jsonData.notification).to.have.property('links');\r",
+									"    pm.expect(jsonData.notification.links).to.have.property('self');\r",
+									"});\r",
+									"\r",
+									"pm.test('Body is link_notification', function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData).to.have.property('notification');\r",
+									"    pm.expect(jsonData.notification).to.have.property('links');\r",
+									"    pm.expect(jsonData.notification.links).to.have.property('self');\r",
+									"    pm.expect(jsonData.notification.links.self).is.eql(pm.collectionVariables.get('link_notification'));\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "1fd0ba13-a284-44c8-999f-c8ac35e20ca3",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token_admin}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept-Version",
+								"type": "text",
+								"value": "1.0"
+							}
+						],
+						"url": {
+							"raw": "{{server}}{{link_notification}}",
+							"host": [
+								"{{server}}{{link_notification}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Notification",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "958186d8-7364-43fe-8543-7600c8b586fc",
+								"exec": [
+									"pm.test('Status code is 200', function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test('Response have proper body', function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData).to.have.property('notification');\r",
+									"    pm.expect(jsonData.notification).to.have.property('category');\r",
+									"    pm.expect(jsonData.notification).to.have.property('datetime_schedule');\r",
+									"    pm.expect(jsonData.notification).to.have.property('datetime_dispatch');\r",
+									"    pm.expect(jsonData.notification).to.have.property('links');\r",
+									"    pm.expect(jsonData.notification.links).to.have.property('self');\r",
+									"});\r",
+									"\r",
+									"pm.test('Body is link_notification', function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData).to.have.property('notification');\r",
+									"    pm.expect(jsonData.notification).to.have.property('subject');\r",
+									"    pm.expect(jsonData.notification.subject).is.eql('Test2');\r",
+									"    pm.expect(jsonData.notification).to.have.property('body');\r",
+									"    pm.expect(jsonData.notification.subject).is.eql('Body test 2');\r",
+									"    pm.expect(jsonData.notification).to.have.property('links');\r",
+									"    pm.expect(jsonData.notification.links).to.have.property('self');\r",
+									"    pm.expect(jsonData.notification.links.self).is.eql(pm.collectionVariables.get('link_notification'));\r",
+									"});\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "d904093f-27f6-4bc4-b7d1-ed218b4b2460",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token_admin}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Accept-Version",
+								"type": "text",
+								"value": "1.0"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"category\": \"email\",\r\n    \"recipients\": \"perinisimone98@gmail.com\",\r\n    \"subject\": \"Test2\",\r\n    \"body\": \"Body test 2\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{server}}{{link_notification}}",
+							"host": [
+								"{{server}}{{link_notification}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Notification",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "1997fc75-0d52-4a3f-b2b5-f3891fe8089d",
+								"exec": [
+									"pm.test('Status code is 200', function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test('Response have proper body', function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData).to.have.property('result');\r",
+									"    pm.expect(jsonData.result).is.eql(true);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "158ddc91-762a-4411-a76e-f821c766f7d5",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token_admin}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Accept-Version",
+								"type": "text",
+								"value": "1.0"
+							}
+						],
+						"url": {
+							"raw": "{{server}}{{link_notification}}",
+							"host": [
+								"{{server}}{{link_notification}}"
+							]
+						}
+					},
+					"response": []
+				}
+			],
 			"protocolProfileBehavior": {}
 		}
 	],
@@ -572,28 +1127,33 @@
 	],
 	"variable": [
 		{
-			"id": "bbec748c-084c-496a-a7b6-5ef41ccdcc1d",
+			"id": "50a8cb27-af2c-451a-a629-82ce85a5be69",
 			"key": "server",
 			"value": "http://127.0.0.1:5000"
 		},
 		{
-			"id": "2bd51b46-00b5-4f77-a1ad-1092759c0f38",
+			"id": "d774d079-6ede-4bcc-b02d-78889554ff20",
 			"key": "access_token",
 			"value": ""
 		},
 		{
-			"id": "8fac5baf-21fc-44f9-aa80-fe102c8074d0",
+			"id": "6fef411f-8263-4b57-ac8f-e834c75bf482",
 			"key": "link_user",
 			"value": ""
 		},
 		{
-			"id": "f0af82c7-fb82-4add-94c8-1e5337382fa5",
+			"id": "11149210-bbf5-47f8-9331-32fb5e54e4e6",
 			"key": "access_token_admin",
 			"value": ""
 		},
 		{
-			"id": "b2f93cfc-abc8-4ad8-a504-a764aebdfdc4",
+			"id": "1e576ebf-de78-4065-bdb0-4c39059f632c",
 			"key": "link_user_admin",
+			"value": ""
+		},
+		{
+			"id": "0623a2c6-57ee-40ea-885e-6db9d449fde1",
+			"key": "link_notification",
 			"value": ""
 		}
 	],
