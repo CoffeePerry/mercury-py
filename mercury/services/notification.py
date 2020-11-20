@@ -93,7 +93,7 @@ def update_notification(id, notification, user_id=None):
             '_id': id,
             'user_id': user_id,
             'category': notification['category'],
-            'datetime_schedule': notification['datetime_schedule']
+            'datetime_schedule': notification.get('datetime_schedule', notification_found['datetime_schedule'])
         }
     else:
         return None

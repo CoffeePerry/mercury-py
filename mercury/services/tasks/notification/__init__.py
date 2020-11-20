@@ -53,7 +53,10 @@ def route_notification_mail(notification):
     :param notification: Notification to route to mail notification channel.
     :return: Operations logs.
     """
-    msg = Message(recipients=notification['recipients'], subject=notification['subject'],
+    recipients = notification['recipients']
+    if isinstance(recipients, str):
+        recipients = [recipients]
+    msg = Message(recipients=recipients, subject=notification['subject'],
                   body=notification.get('body'), html=notification.get('html'),
                   cc=notification.get('cc'), bcc=notification.get('bcc'), reply_to=notification.get('reply_to'))
     try:
@@ -62,13 +65,13 @@ def route_notification_mail(notification):
             [msg.attach(filename=attachment.get('filename'), content_type=attachment.get('content_type'),
                         data=b64decode(attachment['data'])) for attachment in attachments]
     except Exception as ex:
-        return f'Mail attachments with _id {notification["_id"]} failed to load at ' \
-               f'{datetime.now().strftime("%Y-%m-%d %H:%M:%S")}!{linesep}Detail: {str(ex)}'
+        raise Exception(f'Mail attachments with _id {notification["_id"]} failed to load at '
+                        f'{datetime.now().strftime("%Y-%m-%d %H:%M:%S")}!{linesep}Detail: {str(ex)}')
     try:
         mail.send(msg)
     except Exception as ex:
-        return f'Dispatch mail with _id {notification["_id"]} failed at ' \
-               f'{datetime.now().strftime("%Y-%m-%d %H:%M:%S")}!{linesep}Detail: {str(ex)}'
+        raise Exception(f'Dispatch mail with _id {notification["_id"]} failed at '
+                        f'{datetime.now().strftime("%Y-%m-%d %H:%M:%S")}!{linesep}Detail: {str(ex)}')
     success_msg = f'Successfully dispatched mail with _id {notification["_id"]} at ' \
                   f'{datetime.now().strftime("%Y-%m-%d %H:%M:%S")}.'
     try:
@@ -77,6 +80,6 @@ def route_notification_mail(notification):
         if result is None:
             raise Exception('Acknowledged: False.')
     except Exception as ex:
-        return f'Update mail datetime_dispatch with _id {notification["_id"]} failed at ' \
-               f'{datetime.now().strftime("%Y-%m-%d %H:%M:%S")}!{linesep}Detail: {str(ex)}'
+        raise Exception(f'Update mail datetime_dispatch with _id {notification["_id"]} failed at '
+                        f'{datetime.now().strftime("%Y-%m-%d %H:%M:%S")}!{linesep}Detail: {str(ex)}')
     return f'{success_msg}{linesep}Successfully updated mail datetime_dispatch with _id {notification["_id"]}.'
