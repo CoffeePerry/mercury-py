@@ -8,7 +8,7 @@ with open(path.join(this_directory, 'README.md'), encoding='utf-8') as file:
     long_description = file.read()
 
 setup(
-    name='mercury',
+    name='mercury-py',
     packages=find_packages(include=['mercury']),
     version='1.0.0',
     description='mercury-py (Mercury for Python) is a Python based microservice that allow to manage scheduled '

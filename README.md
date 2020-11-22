@@ -32,7 +32,7 @@ Categories will be implemented:
 ### Getting it
 To download mercury, either fork this *GitHub* repo or simply download it from *PyPI* via *pip*:
 ~~~
-pip install mercury
+pip install mercury-py
 ~~~
 
 ### Install Dependencies
