@@ -10,7 +10,9 @@ with open(path.join(this_directory, 'README.md'), encoding='utf-8') as file:
 setup(
     name='mercury-py',
     packages=find_packages(include=['mercury']),
-    version='1.0.0',
+    package_data={'mercury': ['static/favicon.ico']},
+    include_package_data=True,
+    version='1.0.1',
     description='mercury-py (Mercury for Python) is a Python based microservice that allow to manage scheduled '
                 'notifications sending.',
     long_description=long_description,
