@@ -5,7 +5,7 @@
 sending.
 
 ## Introduction
-The project consists of a *Flask-based* **Web API**, through which it is possible to manage the scheduling
+The project consists of a *Flask-based* **RESTful Web API**, through which it is possible to manage the scheduling
 of notifications.
 
 *SQLite* database is used internally.
