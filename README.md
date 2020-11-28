@@ -65,6 +65,16 @@ See the *RabbitMQ* *Admin Guide* for more information about access control
 Copy and paste file **config-\*.py**, from folder **configs**, into folder **mercury-instance**
 and modify it according to your needs.
 
+#### Configure the Secret Key
+SECRET_KEY should be changed to some random bytes in production.
+
+You can use the following command to output a random secret key:
+~~~
+$ python -c 'import os; print(os.urandom(16))'
+~~~
+
+Then place returned value into your **config.py**.
+
 ### **Note**: *Windows* Systems
 
 On *Windows* systems, an additional dependency must be installed in order for Celery-based submodules to function

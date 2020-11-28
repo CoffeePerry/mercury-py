@@ -23,6 +23,12 @@ def init_app(app):
         if not path.isdir(celery_beat_folder):
             makedirs(celery_beat_folder)
             raise Exception(f'Directory not found, so just created: {celery_beat_folder}')
+    except OSError as ex:
+        app.logger.error(str(ex))
+    except Exception as ex:
+        app.logger.exception(str(ex))
+
+    try:
         # Ensure the celery logs folder exists
         celery_logs_folder = path.join(app.instance_path, app.config['CELERY_LOGS_FOLDER'])
         if not path.isdir(celery_logs_folder):

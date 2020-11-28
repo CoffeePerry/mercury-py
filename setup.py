@@ -14,6 +14,7 @@ setup(
     packages=find_packages(include=['mercury']),
     package_data={'mercury': ['static/favicon.ico']},
     include_package_data=True,
+    zip_safe=False,
     version=version,
     description='mercury-py (Mercury for Python) is a Python based microservice that allow to manage scheduled '
                 'notifications sending.',
