@@ -62,8 +62,8 @@ See the *RabbitMQ* *Admin Guide* for more information about access control
 
 ### Setting up
 
-Create a folder called **Instance**, copy and paste file **config.py**, from **config-template**, and modify it
-according to your needs.
+Copy and paste file **config-\*.py**, from folder **configs**, into folder **mercury-instance**
+and modify it according to your needs.
 
 ### **Note**: *Windows* Systems
 

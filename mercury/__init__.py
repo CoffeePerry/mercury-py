@@ -11,6 +11,8 @@ from os import path, makedirs
 from flask import Flask, send_from_directory
 from flask_restful import Api
 
+CONFIG_FILENAME = 'config.py'
+
 api = Api()
 
 
@@ -22,21 +24,33 @@ def create_app():
     # Create and configure the app
     app = Flask(__name__, instance_relative_config=True)
 
-    # Ensure the instance folder exists
+    # Load the default config
+    from .services.config import Config
+    app.config.from_object(Config(app))
+
     try:
+        # Ensure the instance folder exists
         if not path.isdir(app.instance_path):
             makedirs(app.instance_path)
-            raise Exception('Directory not found, so just created. Put file "config.py" inside, please.')
+            raise Exception(f'Directory not found, so just created: {app.instance_path}.'
+                            f'Put file "{CONFIG_FILENAME}" inside, please.')
+        # Ensure the database folder exists
+        database_folder = path.join(app.instance_path, app.config['DATABASE_FOLDER'])
+        if not path.isdir(database_folder):
+            makedirs(database_folder)
+            raise Exception(f'Directory not found, so just created: {database_folder}')
     except OSError as ex:
         app.logger.error(str(ex))
     except Exception as ex:
         app.logger.exception(str(ex))
 
-    from instance.config import ProductionConfig, DevelopmentConfig
-    if app.env == 'production':
-        app.config.from_object(ProductionConfig(app))  # Load the production instance config
-    else:
-        app.config.from_object(DevelopmentConfig(app))  # Load the development instance config
+    # Load the instance config
+    app.config.from_pyfile(path.join(app.instance_path, CONFIG_FILENAME))
+
+    secret_key = app.config.get('SECRET_KEY')
+    if secret_key is None:
+        app.logger.error(f'Set variable SECRET_KEY with random string in file: '
+                         f'{path.join(app.instance_path, CONFIG_FILENAME)}')
 
     init_database_sql(app)
     init_database_nosql_mongo(app)
