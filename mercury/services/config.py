@@ -29,6 +29,8 @@ class Config(object):
         # Celery - for Tasks
         self.BROKER_URL = None
         self.CELERY_RESULT_BACKEND = self.MONGO_URI
+        self.CELERY_LOGS_FOLDER = 'logs'
+        self.CELERY_BEAT_FOLDER = 'celerybeat'
 
         # Email
         self.MAIL_SERVER = None

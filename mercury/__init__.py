@@ -34,11 +34,6 @@ def create_app():
             makedirs(app.instance_path)
             raise Exception(f'Directory not found, so just created: {app.instance_path}.'
                             f'Put file "{CONFIG_FILENAME}" inside, please.')
-        # Ensure the database folder exists
-        database_folder = path.join(app.instance_path, app.config['DATABASE_FOLDER'])
-        if not path.isdir(database_folder):
-            makedirs(database_folder)
-            raise Exception(f'Directory not found, so just created: {database_folder}')
     except OSError as ex:
         app.logger.error(str(ex))
     except Exception as ex:

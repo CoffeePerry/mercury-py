@@ -5,6 +5,8 @@ from os import path
 from flask_sqlalchemy import SQLAlchemy
 from flask.cli import AppGroup
 
+from os import makedirs
+
 db = SQLAlchemy()
 db_cli = AppGroup('database')
 
@@ -16,6 +18,17 @@ def init_app(app):
     """
     db.init_app(app)
     app.cli.add_command(db_cli)
+
+    try:
+        # Ensure the database folder exists
+        database_folder = path.join(app.instance_path, app.config['DATABASE_FOLDER'])
+        if not path.isdir(database_folder):
+            makedirs(database_folder)
+            raise Exception(f'Directory not found, so just created: {database_folder}')
+    except OSError as ex:
+        app.logger.error(str(ex))
+    except Exception as ex:
+        app.logger.exception(str(ex))
 
     # Check if sql database exists
     if not path.isfile(app.config['DATABASE_FILENAME']):
