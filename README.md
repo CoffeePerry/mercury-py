@@ -38,12 +38,12 @@ pip install mercury-py
 ### Install Dependencies
 Mercury needs:
 - *MongoDB*: get it from the official site (*https://www.mongodb.com/*) or from the official
-repository of your Linux disto, for example, on *Debian-like* systems:
+repository of your Linux distro, for example, on *Debian-like* systems:
 ~~~
 sudo apt install mongodb
 ~~~
 - *RabbitMQ*: get it from the official site (*https://www.rabbitmq.com/*) or from the official
-repository of your Linux disto, for example, on *Debian-like* systems:
+repository of your Linux distro, for example, on *Debian-like* systems:
 ~~~
 sudo apt install rabbitmq-server
 ~~~
