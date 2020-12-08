@@ -67,6 +67,7 @@ def insert_notification(notification, user_id):
     notification['user_id'] = user_id
     notification['datetime_schedule'] = notification.get('datetime_schedule',
                                                          datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
+    notification.pop('_id', None)
     return {
         '_id': mongo.db.notification.insert_one(notification).inserted_id,
         'user_id': user_id,
@@ -87,6 +88,7 @@ def update_notification(id, notification, user_id=None):
         user_id = notification['user_id']
     else:
         notification['user_id'] = user_id
+    notification.pop('_id', None)
     notification_found = mongo.db.notification.find_one_or_404({'_id': ObjectId(id), 'user_id': user_id})
     if mongo.db.notification.update_one({'_id': notification_found['_id']}, {'$set': notification}).acknowledged:
         return {

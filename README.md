@@ -1,4 +1,17 @@
-![mercury-py logo](https://github.com/CoffeePerry/mercury-py/blob/master/art/mercury.png)
+![Mercury release](https://img.shields.io/badge/Current%20Mercury%20Version-Emailer-red?style=for-the-badge)
+
+![mercury-py logo](https://github.com/CoffeePerry/mercury-py/blob/master/art/mercury.png?raw=true)
+
+![GitHub release (latest by date)](https://img.shields.io/github/v/release/CoffeePerry/mercury-py)
+![PyPI](https://img.shields.io/pypi/v/mercury-py)
+![PyPI - Status](https://img.shields.io/pypi/status/mercury-py)
+
+![PyPI - Python Version](https://img.shields.io/pypi/pyversions/mercury-py)
+![PyPI - Implementation](https://img.shields.io/pypi/implementation/mercury-py)
+
+[![GitHub license](https://img.shields.io/github/license/CoffeePerry/mercury-py)](https://github.com/CoffeePerry/mercury-py/blob/master/LICENSE)
+
+[![GitHub issues](https://img.shields.io/github/issues/CoffeePerry/mercury-py)](https://github.com/CoffeePerry/mercury-py/issues)
 
 # mercury-py
 **mercury-py** (*Mercury for Python*) is a Python based microservice that allow to manage scheduled notifications'
