@@ -5,7 +5,7 @@ from mercury.controllers.user import UserListAPI, UserAPI, UserLoginAPI
 
 
 def init_api(api):
-    """Initalizes the application Api routes.
+    """Initializes the application Api routes.
 
     :param api: The Flask application's Api object.
     """

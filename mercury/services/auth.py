@@ -6,7 +6,7 @@ jwt = JWTManager()
 
 
 def init_app(app):
-    """Initalizes the application auth.
+    """Initializes the application auth.
 
     :param app: The Flask application object.
     """

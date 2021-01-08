@@ -9,7 +9,7 @@ celery = Celery(__name__)
 
 
 def init_app(app):
-    """Initalizes the application with the extension.
+    """Initializes the application with the extension.
 
     :param app: The Flask application object.
     """

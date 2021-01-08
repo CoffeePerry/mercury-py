@@ -12,7 +12,7 @@ db_cli = AppGroup('database')
 
 
 def init_app(app):
-    """Initalizes the application database (SQL).
+    """Initializes the application database (SQL).
 
     :param app: The Flask application object.
     """
