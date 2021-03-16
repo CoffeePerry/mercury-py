@@ -1,11 +1,11 @@
 # coding=utf-8
 
+from flask import abort, request
+from flask_jwt_extended import jwt_required, get_jwt_identity
+from flask_restful import Resource, marshal
+
 from mercury.services import user as services_user
 from mercury.services.custom_exceptions import MethodVersionNotFound
-
-from flask import abort, request
-from flask_restful import Resource, marshal
-from flask_jwt_extended import jwt_required, get_jwt_identity
 
 
 class UserListAPI(Resource):

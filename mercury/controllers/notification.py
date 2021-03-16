@@ -1,12 +1,12 @@
 # coding=utf-8
 
+from flask import abort, request
+from flask_jwt_extended import jwt_required, get_jwt_identity
+from flask_restful import Resource, marshal
+
 from mercury.services import notification as services_notification
 from mercury.services import user as services_user
 from mercury.services.custom_exceptions import MethodVersionNotFound
-
-from flask import abort, request
-from flask_restful import Resource, marshal
-from flask_jwt_extended import jwt_required, get_jwt_identity
 
 
 class NotificationListAPI(Resource):
@@ -81,7 +81,7 @@ class NotificationAPI(Resource):
             if not request.json:
                 abort(400)
             result = services_notification.update_notification(_id, request.json, user_id)
-            if result is None:
+            if not result:
                 return {'result': False}
             return {'notification': marshal(result, services_notification.notification_fields)}
         raise MethodVersionNotFound()

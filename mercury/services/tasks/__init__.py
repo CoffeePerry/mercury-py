@@ -1,9 +1,9 @@
 # coding=utf-8
 
+from os import path, makedirs
+
 from celery import Celery
 from celery.schedules import crontab
-
-from os import path, makedirs
 
 celery = Celery(__name__)
 
@@ -15,7 +15,7 @@ def init_app(app):
     """
     celery.conf.broker_url = app.config['BROKER_URL']
     celery.conf.update(app.config)
-    celery.config_from_object(CeleryBeatConfig())  # Load Celery Beat instance config
+    celery.config_from_object(CeleryBeatConfig(app))  # Load Celery Beat instance config
 
     try:
         # Ensure the celery beat folder exists
@@ -48,18 +48,18 @@ def init_app(app):
 
 
 class CeleryBeatConfig(object):
-    def __init__(self):
+    def __init__(self, app):
         """CeleryBeatConfig constructor"""
         self.CELERY_TASK_SERIALIZER = 'json'
         self.CELERY_RESULT_SERIALIZER = 'json'
         self.CELERY_ACCEPT_CONTENT = ['json']
-        self.CELERY_IMPORTS = ('mercury.services.tasks.notification', )
+        self.CELERY_IMPORTS = ('mercury.services.tasks.notification',)
         self.CELERY_TIMEZONE = 'UTC'
         self.CELERY_TASK_RESULT_EXPIRES = 30
 
         self.CELERYBEAT_SCHEDULE = {
             'route_notifications': {
                 'task': 'mercury.services.tasks.notification.route_notifications',
-                'schedule': crontab(minute='*'),  # Every minute
+                'schedule': crontab(minute=app.config['CELERY_BEAT_CRONTAB_MINUTE']),
             }
         }

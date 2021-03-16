@@ -1,13 +1,13 @@
 # coding=utf-8
 
-from .. import celery
-from mercury.services.notification import find_notifications_to_dispatch, update_notification
-
-from datetime import datetime
 from base64 import b64decode
+from datetime import datetime
 from os import linesep
 
 from flask_mail import Mail, Message
+
+from mercury.services.notification import notification_dispatch, update_notification, find_notifications_to_dispatch
+from .. import celery
 
 mail = Mail()
 
@@ -19,16 +19,41 @@ def init_app(app):
     """
     mail.init_app(app)
 
+    notification_dispatch.connect(when_notification_dispatch, app)
+
+
+def when_notification_dispatch(sender, notification, **extra):
+    """Celery task routine to execute route_notification task.
+
+    :param sender: Sender.
+    :param notification: Notification to dispatch.
+    :param extra: other params.
+    """
+    dispatch_notification.delay(notification)
+
+
+@celery.task()
+def dispatch_notification(notification):
+    """Celery task routine to find and route notification to dispatch to correct notification channel
+    (executed by Celery worker).
+
+    :param notification: Notification to dispatch.
+    :return: Operations logs.
+    """
+    if not notification:
+        return 'Nothing to dispatch.'
+    return route_notification(notification)
+
 
 @celery.task()
 def route_notifications():
     """Celery task routine to find and route notifications to dispatch to correct notification channel
-    (executed by celery worker).
+    (executed by Celery worker).
 
     :return: Operations logs.
     """
     notifications = find_notifications_to_dispatch()
-    if notifications is None or notifications.count() < 1:
+    if (not notifications) or (notifications.count() < 1):
         return 'Nothing to dispatch.'
     result = ''
     for notification in notifications:
@@ -66,20 +91,21 @@ def route_notification_mail(notification):
                         data=b64decode(attachment['data'])) for attachment in attachments]
     except Exception as ex:
         raise Exception(f'Mail attachments with _id {notification["_id"]} failed to load at '
-                        f'{datetime.now().strftime("%Y-%m-%d %H:%M:%S")}!{linesep}Detail: {str(ex)}')
+                        f'{datetime.now().strftime("%Y-%m-%d %H:%M:%S")}!{linesep}Detail: {ex}')
     try:
         mail.send(msg)
     except Exception as ex:
         raise Exception(f'Dispatch mail with _id {notification["_id"]} failed at '
-                        f'{datetime.now().strftime("%Y-%m-%d %H:%M:%S")}!{linesep}Detail: {str(ex)}')
+                        f'{datetime.now().strftime("%Y-%m-%d %H:%M:%S")}!{linesep}Detail: {ex}')
     success_msg = f'Successfully dispatched mail with _id {notification["_id"]} at ' \
                   f'{datetime.now().strftime("%Y-%m-%d %H:%M:%S")}.'
+    notification_id = notification["_id"]
     try:
         notification['datetime_dispatch'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         result = update_notification(notification['_id'], notification)
-        if result is None:
+        if not result:
             raise Exception('Acknowledged: False.')
+        return f'{success_msg}{linesep}Successfully updated mail datetime_dispatch with _id {result["_id"]}.'
     except Exception as ex:
-        raise Exception(f'Update mail datetime_dispatch with _id {notification["_id"]} failed at '
-                        f'{datetime.now().strftime("%Y-%m-%d %H:%M:%S")}!{linesep}Detail: {str(ex)}')
-    return f'{success_msg}{linesep}Successfully updated mail datetime_dispatch with _id {notification["_id"]}.'
+        raise Exception(f'Update mail datetime_dispatch with _id {notification_id} failed at '
+                        f'{datetime.now().strftime("%Y-%m-%d %H:%M:%S")}!{linesep}Detail: {ex}')

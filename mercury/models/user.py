@@ -1,10 +1,10 @@
 # coding=utf-8
 
-from mercury.services.database_sql import db
-
-from typing import Final
 from datetime import datetime
 from secrets import token_hex, compare_digest
+from typing import Final
+
+from mercury.services.database_sql import db
 
 
 class User(db.Model):

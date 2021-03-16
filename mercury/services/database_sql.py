@@ -1,11 +1,10 @@
 # coding=utf-8
 
+from os import makedirs
 from os import path
 
-from flask_sqlalchemy import SQLAlchemy
 from flask.cli import AppGroup
-
-from os import makedirs
+from flask_sqlalchemy import SQLAlchemy
 
 db = SQLAlchemy()
 db_cli = AppGroup('database')
@@ -35,17 +34,18 @@ def init_app(app):
         app.logger.warning(f'Database SQL not found! File: {app.config["DATABASE_FILENAME"]}')
 
 
-@db_cli.command('create')
-def create_database():
-    """Create the database schema."""
+@db_cli.command('create-tables', help='Create all SQL database tables.')
+def create_tables():
+    """Create all SQL database tables."""
     db.create_all()
-    print('Database SQL created')
+    print('SQL Database\'s tables created')
 
 
-@db_cli.command('drop')
+@db_cli.command('drop-tables', help='Drop all SQL database tables.')
 def drop_database():
-    """Drop the database."""
-    response = input('Are you really sure to delete the SQL database and all the data it contains? [Y/n]:')
-    if response.lower() == 'y':
+    """Drop all SQL database tables."""
+    if input('Are you really sure to delete all SQL database tables? [y/N]:').lower() == 'y':
         db.drop_all()
-        print('Database SQL dropped')
+        print('SQL Database\'s tables dropped')
+    else:
+        print('Aborted!')

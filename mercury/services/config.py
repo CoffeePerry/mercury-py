@@ -31,6 +31,7 @@ class Config(object):
         self.CELERY_RESULT_BACKEND = self.MONGO_URI
         self.CELERY_LOGS_FOLDER = 'logs'
         self.CELERY_BEAT_FOLDER = 'celerybeat'
+        self.CELERY_BEAT_CRONTAB_MINUTE = '*'  # Every minute
 
         # Email
         self.MAIL_SERVER = None

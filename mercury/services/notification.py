@@ -1,11 +1,17 @@
 # coding=utf-8
 
-from mercury.services.database_nosql_mongo import db as mongo
-
 from datetime import datetime
-from bson import ObjectId
 
+from bson import ObjectId
+from flask import current_app
 from flask_restful import fields, reqparse
+
+from mercury.services.database_nosql_mongo import db as mongo
+from mercury.services.signals import signals
+from mercury.services.dictionaries import merge_dicts
+
+"""Signals"""
+notification_dispatch = signals.signal('notification-dispatch')
 
 """Fields to marshal notification to JSON."""
 notification_fields = {
@@ -18,7 +24,6 @@ notification_fields = {
     }
 }
 
-
 '''CRUD Functions'''
 
 
@@ -28,7 +33,7 @@ def get_request_parser(request_parser=None):
     :param request_parser: If exists, add request parser argument to request_parser param.
     :return: Notification request parser.
     """
-    if request_parser is None:
+    if not request_parser:
         result = reqparse.RequestParser()
     else:
         result = request_parser
@@ -68,12 +73,9 @@ def insert_notification(notification, user_id):
     notification['datetime_schedule'] = notification.get('datetime_schedule',
                                                          datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
     notification.pop('_id', None)
-    return {
-        '_id': mongo.db.notification.insert_one(notification).inserted_id,
-        'user_id': user_id,
-        'category': notification['category'],
-        'datetime_schedule': notification['datetime_schedule']
-    }
+    notification['_id'] = str(mongo.db.notification.insert_one(notification).inserted_id)
+    instant_dispatch(notification)
+    return notification
 
 
 def update_notification(id, notification, user_id=None):
@@ -84,19 +86,17 @@ def update_notification(id, notification, user_id=None):
     :param notification: Notification to persist.
     :return: Persisted notification's base informations or error.
     """
-    if user_id is None:
-        user_id = notification['user_id']
-    else:
+    if user_id:
         notification['user_id'] = user_id
+    else:
+        user_id = notification['user_id']
     notification.pop('_id', None)
     notification_found = mongo.db.notification.find_one_or_404({'_id': ObjectId(id), 'user_id': user_id})
     if mongo.db.notification.update_one({'_id': notification_found['_id']}, {'$set': notification}).acknowledged:
-        return {
-            '_id': id,
-            'user_id': user_id,
-            'category': notification['category'],
-            'datetime_schedule': notification.get('datetime_schedule', notification_found['datetime_schedule'])
-        }
+        notification = merge_dicts(notification_found, notification)
+        notification['_id'] = str(notification['_id'])
+        instant_dispatch(notification)
+        return notification
     else:
         return None
 
@@ -124,3 +124,17 @@ def find_notifications_to_dispatch():
         'datetime_schedule': {'$lte': datetime.now().strftime('%Y-%m-%d %H:%M:%S')},
         'datetime_dispatch': None
     })
+
+
+def instant_dispatch(notification):
+    """Check if it's must to do notification's instant dispatch.
+
+    :param notification: notification to check and eventually immediately dispatch.
+    """
+    if notification and (
+            (not notification.get('datetime_schedule')) or (
+                datetime.strptime(notification['datetime_schedule'], '%Y-%m-%d %H:%M:%S') <= datetime.now() and
+                (not notification.get('datetime_dispatch'))
+            )
+    ):
+        notification_dispatch.send(current_app._get_current_object(), notification=notification)

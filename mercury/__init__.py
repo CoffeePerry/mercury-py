@@ -1,15 +1,16 @@
 # coding=utf-8
 
-from .services.database_sql import init_app as init_database_sql
-from .services.database_nosql_mongo import init_app as init_database_nosql_mongo
-from .services.auth import init_app as init_auth
-from .services.tasks import init_app as init_tasks
-from .services.tasks.notification import init_app as init_notification
-
 from os import path, makedirs
 
 from flask import Flask, send_from_directory
 from flask_restful import Api
+
+from .services.auth import init_app as init_auth
+from .services.database_nosql_mongo import init_app as init_database_nosql_mongo
+from .services.database_sql import init_app as init_database_sql
+from .services.signals import init_app as init_signals
+from .services.tasks import init_app as init_tasks
+from .services.tasks.notification import init_app as init_notification
 
 CONFIG_FILENAME = 'config.py'
 
@@ -43,10 +44,11 @@ def create_app():
     app.config.from_pyfile(path.join(app.instance_path, CONFIG_FILENAME))
 
     secret_key = app.config.get('SECRET_KEY')
-    if secret_key is None:
+    if not secret_key:
         app.logger.error(f'Set variable SECRET_KEY with random string in file: '
                          f'{path.join(app.instance_path, CONFIG_FILENAME)}')
 
+    init_signals(app)
     init_database_sql(app)
     init_database_nosql_mongo(app)
 
@@ -78,7 +80,7 @@ def create_app():
         return send_from_directory(path.join(app.root_path, 'static'),
                                    'favicon.ico', mimetype='image/vnd.microsoft.icon')
 
-    @app.cli.command('info')
+    @app.cli.command('info', help='Display info.')
     def info():
         """Print Mercury info.
 

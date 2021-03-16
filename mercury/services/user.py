@@ -1,14 +1,14 @@
 # coding=utf-8
 
-from mercury.models.user import User
-from mercury.services.database_sql import db, db_cli
-
 from datetime import timedelta
 
-from werkzeug.exceptions import BadRequest, Unauthorized, Forbidden
-from flask_restful import fields, reqparse, inputs
+from click import option, confirmation_option
 from flask_jwt_extended import create_access_token
-from click import argument
+from flask_restful import fields, reqparse, inputs
+from werkzeug.exceptions import BadRequest, Unauthorized, Forbidden
+
+from mercury.models.user import User
+from mercury.services.database_sql import db, db_cli
 
 """Fields to marshal user to JSON."""
 user_fields = {
@@ -32,10 +32,10 @@ def get_request_parser(request_parser=None, is_login_request=False):
     :param is_login_request: If True, add request parser argument password to request_parser param.
     :return: User request parser.
     """
-    if request_parser is None:
-        result = reqparse.RequestParser()
-    else:
+    if request_parser:
         result = request_parser
+    else:
+        result = reqparse.RequestParser()
     result.add_argument('username', type=str, required=True, help='No user username provided', location='json')
     if is_login_request:
         result.add_argument('password', type=str, required=True, help='No user password provided', location='json')
@@ -63,15 +63,17 @@ def select_users():
     return User.query.all()
 
 
-def insert_user(username):
+def insert_user(username, admin=False):
     """Post new user from username param.
 
     :param username: User's username to persist.
+    :param admin: New user is an administrator.
     :return: Persisted user or error.
     """
     user = User()
     user.username = username
     user.generate_password()
+    user.admin = admin
     db.session.add(user)
     db.session.commit()
     return user
@@ -83,7 +85,7 @@ def update_user(user):
     :param user: User to persist.
     :return: Persisted user or error.
     """
-    if user is None:
+    if not user:
         return None
     db.session.commit()
     return user
@@ -111,10 +113,10 @@ def login_user(user):
     :return: User's access_token or error.
     """
     username = user.get('username')
-    if username is None:
+    if not username:
         raise BadRequest('Missing username parameter')
     password = user.get('password')
-    if password is None:
+    if not password:
         raise BadRequest('Missing password parameter')
     db_user = User.query.filter(User.username == username).scalar()
     if db_user and db_user.verify_password(password):
@@ -133,25 +135,22 @@ def check_if_user_is_admin(id):
     :return: Outcome of the comparison, True if user is admin, otherwise False.
     """
     user = User.query.get(id)
-    if user is None:
+    if not user:
         return False
     return user.admin
 
 
-@db_cli.command('register')
-@argument('username')
-def register_user(username):
+@db_cli.command('register', help='Register new user.')
+@option('-u', '--usr', '--username', prompt='Enter new user\'s username', help='Specify new user\'s username.')
+@option('-a', '--adm', '--admin', is_flag=True, help='New user is an administrator.')
+@confirmation_option('-y', '--yes', '--assume-yes', prompt=f'Are you really sure to register new user?',
+                     help='Automatic yes to prompts. Assume "yes" as answer to all prompts and run non-interactively.')
+def register_user(usr, adm):
     """Register new user.
 
-    :param username: New user's username.
+    :param usr: New user's username.
+    :param adm: New user is an administrator.
     """
-    if not username:
-        print('Please, enter an unique Username.')
-    else:
-        response = input(f'Are you really sure to register new user {username}? [Y/n]:')
-        if response.lower() == 'y':
-            print('Creation in progress...')
-            user = insert_user(username)
-            print(f'{user} successfully created')
-        else:
-            print('Aborted.')
+    print(f'{usr} creation in progress...')
+    new_user = insert_user(usr, adm)
+    print(f'{new_user} successfully created')
