@@ -42,6 +42,6 @@ setup(
         'Flask-PyMongo==2.3.0',
         'Flask-JWT-Extended==3.25.0',
         'Flask-Mail==0.9.1',
-        'celery==4.4.5'
+        'celery==5.2.2'
     ]
 )
