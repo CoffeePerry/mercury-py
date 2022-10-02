@@ -36,12 +36,12 @@ setup(
     url='https://github.com/CoffeePerry/mercury-py',
     download_url=f'https://github.com/CoffeePerry/mercury-py/archive/{version}.tar.gz',
     install_requires=[
-        'Flask==1.1.2',
-        'Flask-RESTful==0.3.8',
-        'Flask-SQLAlchemy==2.4.4',
+        'Flask==2.2.2',
+        'Flask-RESTful==0.3.9',
+        'Flask-SQLAlchemy==2.5.1',
         'Flask-PyMongo==2.3.0',
-        'Flask-JWT-Extended==3.25.0',
+        'Flask-JWT-Extended==4.4.4',
         'Flask-Mail==0.9.1',
-        'celery==4.4.5'
+        'celery==5.2.7'
     ]
 )
