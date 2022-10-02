@@ -53,7 +53,7 @@ def route_notifications():
     :return: Operations logs.
     """
     notifications = find_notifications_to_dispatch()
-    if (not notifications) or (notifications.count() < 1):
+    if (not notifications) or (len(list(notifications.clone())) < 1):
         return 'Nothing to dispatch.'
     result = ''
     for notification in notifications:

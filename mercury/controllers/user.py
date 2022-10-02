@@ -9,7 +9,7 @@ from mercury.services.custom_exceptions import MethodVersionNotFound
 
 
 class UserListAPI(Resource):
-    decorators = [jwt_required]
+    decorators = [jwt_required()]
 
     def __init__(self):
         """UserListAPI constructor."""
@@ -43,7 +43,7 @@ class UserListAPI(Resource):
 
 
 class UserAPI(Resource):
-    decorators = [jwt_required]
+    decorators = [jwt_required()]
 
     def __init__(self):
         """UserAPI constructor."""
