@@ -88,6 +88,15 @@ $ python -c 'import os; print(os.urandom(16))'
 
 Then place returned value into your **config.py**.
 
+### Starting **Celery Worker** Alternative
+
+[Source](https://docs.celeryq.dev/en/stable/userguide/periodic-tasks.html#starting-the-scheduler)
+
+You can also embed beat inside the worker by enabling the workers -B option, this is convenient if you’ll never run more than one worker node, but it’s not commonly used and for that reason isn’t recommended for production use:
+~~~
+celery -A mercury.app.celery worker -B --logfile=instance\logs\celery.log --pidfile=instance\celerybeat\celery.pid --schedule=instance\celerybeat\celery-schedule.db --loglevel=DEBUG
+~~~
+
 ### **Note**: *Windows* Systems
 
 On *Windows* systems, an additional dependency must be installed in order for Celery-based submodules to function
@@ -101,13 +110,4 @@ And run (**Celery Beat** and **Celery Workers**) from terminal:
 ~~~
 celery -A mercury.app.celery worker --logfile=instance/logs/celeryworker.log --loglevel=DEBUG --pool=gevent
 celery -A mercury.app.celery beat --logfile=instance/logs/celerybeat.log --loglevel=DEBUG --pidfile=instance/celerybeat/celerybeat.pid --schedule=instance/celerybeat/celerybeat-schedule.db
-~~~
-
-### Starting **Celery Worker** Alternative
-
-[Source](https://docs.celeryq.dev/en/stable/userguide/periodic-tasks.html#starting-the-scheduler)
-
-You can also embed beat inside the worker by enabling the workers -B option, this is convenient if you’ll never run more than one worker node, but it’s not commonly used and for that reason isn’t recommended for production use:
-~~~
-celery -A mercury.app.celery worker -B --logfile=instance\logs\celery.log --pidfile=instance\celerybeat\celery.pid --schedule=instance\celerybeat\celery-schedule.db --loglevel=DEBUG
 ~~~
