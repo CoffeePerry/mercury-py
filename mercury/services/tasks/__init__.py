@@ -17,6 +17,8 @@ def init_app(app):
     celery.conf.update(app.config)
     celery.config_from_object(CeleryBeatConfig(app))  # Load Celery Beat instance config
 
+    celery.conf.task_store_errors_even_if_ignored = True
+
     try:
         # Ensure the celery beat folder exists
         celery_beat_folder = path.join(app.instance_path, app.config['CELERY_BEAT_FOLDER'])
