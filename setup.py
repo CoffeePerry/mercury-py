@@ -26,13 +26,13 @@ setup(
         'Development Status :: 5 - Production/Stable',
         'Intended Audience :: Developers',
         'Topic :: Communications',
-        'License :: OSI Approved :: BSD License',
+        'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
         'Operating System :: OS Independent',
         'Programming Language :: Python :: 3'
     ],  # https://pypi.org/classifiers/
     author='Simone Perini',
     author_email='perinisimone98@gmail.com',
-    license='BSD-3-Clause',
+    license='GPL-3.0',
     url='https://github.com/CoffeePerry/mercury-py',
     download_url=f'https://github.com/CoffeePerry/mercury-py/archive/{version}.tar.gz',
     install_requires=[
