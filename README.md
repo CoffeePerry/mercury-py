@@ -3,11 +3,13 @@
 ![mercury-py logo](https://github.com/CoffeePerry/mercury-py/blob/master/art/mercury.png?raw=true)
 
 ![GitHub release (latest by date)](https://img.shields.io/github/v/release/CoffeePerry/mercury-py)
-![PyPI](https://img.shields.io/pypi/v/mercury-py)
+![PyPI](https://img.shields.io/pypi/v/mercury-py?logo=PyPI&logoColor=white)
 ![PyPI - Status](https://img.shields.io/pypi/status/mercury-py)
 
-![PyPI - Python Version](https://img.shields.io/pypi/pyversions/mercury-py)
+![PyPI - Python Version](https://img.shields.io/pypi/pyversions/mercury-py?logo=Python&logoColor=white)
 ![PyPI - Implementation](https://img.shields.io/pypi/implementation/mercury-py)
+
+[![Flask](https://img.shields.io/badge/Framework-Flask-black?logo=Flask&logoColor=white)](https://github.com/pallets/flask/)
 
 [![GitHub license](https://img.shields.io/github/license/CoffeePerry/mercury-py)](https://github.com/CoffeePerry/mercury-py/blob/master/LICENSE)
 
