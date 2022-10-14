@@ -24,11 +24,16 @@ setup(
     keywords=['notifications', 'authentication', 'email', 'sms', 'push notification', 'telegram'],
     classifiers=[
         'Development Status :: 5 - Production/Stable',
+        'Framework :: Flask',
         'Intended Audience :: Developers',
-        'Topic :: Communications',
+        'Natural Language :: English',
         'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
         'Operating System :: OS Independent',
-        'Programming Language :: Python :: 3'
+        'Programming Language :: Python :: 3',
+        'Topic :: Communications',
+        'Topic :: Communications :: Email',
+        'Topic :: Communications :: Email :: Email Clients (MUA)',
+        'Topic :: Utilities'
     ],  # https://pypi.org/classifiers/
     author='Simone Perini',
     author_email='perinisimone98@gmail.com',
