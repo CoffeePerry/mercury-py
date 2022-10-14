@@ -9,7 +9,7 @@
 ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/mercury-py?logo=Python&logoColor=white)
 ![PyPI - Implementation](https://img.shields.io/pypi/implementation/mercury-py)
 
-[![Flask](https://img.shields.io/badge/Framework-Flask-black?logo=Flask&logoColor=white)](https://github.com/pallets/flask/)
+[![Flask](https://img.shields.io/badge/framework-Flask-black?logo=Flask&logoColor=white)](https://github.com/pallets/flask/)
 
 [![GitHub license](https://img.shields.io/github/license/CoffeePerry/mercury-py)](https://github.com/CoffeePerry/mercury-py/blob/master/LICENSE)
 
