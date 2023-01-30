@@ -1,5 +1,6 @@
 # coding=utf-8
 
+from datetime import timedelta
 from os import path
 
 
@@ -18,6 +19,7 @@ class Config(object):
 
         # Flask-JWT-Extended
         self.JWT_SECRET_KEY = self.SECRET_KEY
+        self.JWT_ACCESS_TOKEN_EXPIRES = timedelta(days=1)
 
         # DBs
         self.DATABASE_FOLDER = 'sqldb'

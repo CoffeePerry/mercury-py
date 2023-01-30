@@ -1,7 +1,5 @@
 # coding=utf-8
 
-from datetime import timedelta
-
 from click import option, confirmation_option
 from flask_jwt_extended import create_access_token
 from flask_restful import fields, reqparse, inputs
@@ -122,7 +120,7 @@ def login_user(user):
     if db_user and db_user.verify_password(password):
         if not db_user.active:
             raise Forbidden('User inactive')
-        db_user.access_token = create_access_token(identity=db_user.id, expires_delta=timedelta(days=1))
+        db_user.access_token = create_access_token(identity=db_user.id)
         return db_user
     else:
         raise Unauthorized('Bad username or password')
