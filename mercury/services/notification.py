@@ -108,7 +108,7 @@ def delete_notification(id, user_id):
     :param user_id: Notification's user_id to find.
     :return: True if elimination was successful or False if elimination was not possible.
     """
-    return mongo.db.notification.remove({'_id': ObjectId(id), 'user_id': user_id})['ok'] == 1.0
+    return mongo.db.notification.delete_one({'_id': ObjectId(id), 'user_id': user_id}).deleted_count == 1
 
 
 '''Other Functions'''
