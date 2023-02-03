@@ -43,7 +43,7 @@ setup(
     install_requires=[
         'Flask==2.2.2',
         'Flask-RESTful==0.3.9',
-        'Flask-SQLAlchemy==2.5.1',
+        'Flask-SQLAlchemy==3.0.3',
         'Flask-PyMongo==2.3.0',
         'Flask-JWT-Extended==4.4.4',
         'Flask-Mail==0.9.1',
